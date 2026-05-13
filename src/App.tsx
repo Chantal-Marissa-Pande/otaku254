@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Chatbot from "./components/Chatbot";
 
 import Home from "./pages/Home";
 import Anime from "./pages/Anime";
@@ -41,6 +42,7 @@ export default function App() {
         </Routes>
       </main>
 
+      <Chatbot />
       <Footer />
     </div>
   );

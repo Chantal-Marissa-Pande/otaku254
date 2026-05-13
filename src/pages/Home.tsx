@@ -60,6 +60,7 @@ export default function Home() {
                 title={post.title}
                 category={post.category}
                 description={post.description}
+                image={post.image}
               />
             ))}
           </div>
