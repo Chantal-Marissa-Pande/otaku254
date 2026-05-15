@@ -46,54 +46,29 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      let aiReply = "";
-
-      const lower = currentMessage.toLowerCase();
-
-      // MOCK AI RESPONSES
-      if (
-        lower.includes("anime") ||
-        lower.includes("recommend")
-      ) {
-        aiReply =
-          "🔥 You should watch:\n• Solo Leveling\n• Attack on Titan\n• Jujutsu Kaisen\n• Frieren\n• Vinland Saga";
-      } else if (lower.includes("naruto")) {
-        aiReply =
-          "🍥 Naruto is one of the most influential shonen anime ever created. Fan favorites include Itachi, Kakashi and Pain.";
-      } else if (
-        lower.includes("kpop") ||
-        lower.includes("music")
-      ) {
-        aiReply =
-          "🎵 Trending K-pop groups right now:\n• NewJeans\n• Stray Kids\n• LE SSERAFIM\n• ATEEZ\n• TXT";
-      } else if (
-        lower.includes("manga") ||
-        lower.includes("read")
-      ) {
-        aiReply =
-          "📚 Recommended manga:\n• Berserk\n• Vagabond\n• Blue Lock\n• Chainsaw Man\n• Kingdom";
-      } else if (
-        lower.includes("one piece")
-      ) {
-        aiReply =
-          "🏴‍☠️ One Piece is currently in its Final Saga and still one of the biggest anime/manga franchises worldwide.";
-      } else {
-        aiReply =
-          "😅 I'm still learning. Try asking:\n• Recommend anime\n• Best K-pop groups\n• Manga suggestions\n• Anime lore";
-      }
-
-      // FAKE AI DELAY
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1000)
+      const response = await fetch(
+        "http://localhost:5000/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: currentMessage,
+          }),
+        }
       );
+
+      const data = await response.json();
 
       const botReply: Message = {
         role: "assistant",
-        text: aiReply,
+        text: data.reply,
       };
 
-      // ADD AI MESSAGE
+      // ADD AI RESPONSE
       setMessages((prev) => [...prev, botReply]);
+
     } catch (error) {
       console.error(error);
 

@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
+
+import type { Post } from "../types/post";
 
 export function usePosts() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "posts"));
-
-        console.log("FIRESTORE RAW:", snapshot.docs);
+        const snapshot = await getDocs(
+          collection(db, "posts")
+        );
 
         const data = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
-
-        console.log("PROCESSED POSTS:", data);
+        })) as Post[];
 
         setPosts(data);
-      } catch (err) {
-        console.error("FIRESTORE ERROR:", err);
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
