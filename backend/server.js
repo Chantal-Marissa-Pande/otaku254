@@ -14,6 +14,12 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Test Route
+app.get("/", (req, res) => {
+  res.send("Otaku AI backend is running!");
+});
+
+// Chat Route
 app.post("/chat", async (req, res) => {
   try {
     const { message } = req.body;
