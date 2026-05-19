@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
+
 import {
   collection,
   getDocs,
@@ -9,6 +10,7 @@ import type { Post } from "../types/post";
 
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,9 +25,20 @@ export function usePosts() {
           ...doc.data(),
         })) as Post[];
 
+        // SORT NEWEST FIRST
+        data.sort(
+          (a, b) =>
+            Number(b.createdAt || 0) -
+            Number(a.createdAt || 0)
+        );
+
         setPosts(data);
+
       } catch (error) {
-        console.error(error);
+        console.error(
+          "Error fetching posts:",
+          error
+        );
       } finally {
         setLoading(false);
       }

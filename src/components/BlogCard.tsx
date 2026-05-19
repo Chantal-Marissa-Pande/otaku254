@@ -6,6 +6,8 @@ interface Props {
   description: string;
   image?: string;
   category: string;
+  readTime?: string;
+  author?: string;
 }
 
 export default function BlogCard({
@@ -14,11 +16,27 @@ export default function BlogCard({
   description,
   image,
   category,
+  readTime,
+  author,
 }: Props) {
   return (
     <Link to={`/post/${id}`}>
-      <div className="bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500 transition hover:scale-[1.02]">
+      <div
+        className="
+          bg-white/5
+          rounded-2xl
+          overflow-hidden
+          border
+          border-white/10
+          hover:border-purple-500
+          hover:scale-[1.02]
+          transition
+          duration-300
+          cursor-pointer
+        "
+      >
 
+        {/* IMAGE */}
         {image && (
           <img
             src={image}
@@ -31,20 +49,35 @@ export default function BlogCard({
           />
         )}
 
+        {/* CONTENT */}
         <div className="p-5">
 
-          <span className="text-purple-400 text-sm">
-            {category}
-          </span>
+          {/* TOP INFO */}
+          <div className="flex justify-between items-center text-xs text-purple-400 mb-3">
 
-          <h2 className="text-xl font-bold mt-2 mb-2">
+            <span>{category}</span>
+
+            {readTime && (
+              <span>{readTime}</span>
+            )}
+          </div>
+
+          {/* TITLE */}
+          <h2 className="text-xl font-bold mb-3">
             {title}
           </h2>
 
-          <p className="text-gray-400">
+          {/* DESCRIPTION */}
+          <p className="text-gray-400 text-sm line-clamp-3">
             {description}
           </p>
 
+          {/* AUTHOR */}
+          {author && (
+            <div className="mt-4 text-xs text-gray-500">
+              By {author}
+            </div>
+          )}
         </div>
       </div>
     </Link>
