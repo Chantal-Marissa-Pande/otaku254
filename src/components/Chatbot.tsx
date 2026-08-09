@@ -37,7 +37,8 @@ export default function Chatbot() {
       setMessages((previous) => [...previous, { role: "assistant", text: data.reply }]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages((previous) => [...previous, { role: "assistant", text: "I couldn't reach Otaku AI just now. Please try again in a moment." }]);
+      const detail = error instanceof Error ? error.message : "Please try again in a moment.";
+      setMessages((previous) => [...previous, { role: "assistant", text: `I couldn't reply just now. ${detail}` }]);
     } finally {
       setLoading(false);
     }

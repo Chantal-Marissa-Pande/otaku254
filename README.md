@@ -7,10 +7,10 @@ Otaku254 is an anime, manga and K-pop media platform with Firestore-powered arti
 1. Copy `.env.example` to `.env` and add the Firebase web app values from your Firebase project.
 2. In Firebase, enable Email/Password authentication and create a Firestore database. Add a user in Authentication - that account can access `/admin`.
 3. Copy `backend/.env.example` to `backend/.env` and add `OPENAI_API_KEY`.
-4. Start the API with `cd backend` then `npm run dev`.
-5. Start the website from the project root with `npm run dev`.
+4. In one terminal, start the API from the project root with `npm run dev:backend`.
+5. In a second terminal, start the website with `npm run dev`.
 
-The browser app uses `http://localhost:5000` for the API by default. Set `VITE_API_URL` to the public backend address when deploying.
+The browser app uses `http://localhost:5000` for the API by default. Both services must be running locally for Otaku AI to work. Set `VITE_API_URL` to the public backend address when deploying.
 
 ## Content model
 

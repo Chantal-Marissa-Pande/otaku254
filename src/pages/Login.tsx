@@ -13,6 +13,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/admin");
     } catch (err) {
+      console.error("Login failed:", err);
       alert("Login failed");
     }
   };
