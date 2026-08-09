@@ -12,6 +12,7 @@ export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -26,19 +27,13 @@ export function usePosts() {
         })) as Post[];
 
         // SORT NEWEST FIRST
-        data.sort(
-          (a, b) =>
-            Number(b.createdAt || 0) -
-            Number(a.createdAt || 0)
-        );
+        data.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
 
         setPosts(data);
 
       } catch (error) {
-        console.error(
-          "Error fetching posts:",
-          error
-        );
+        console.error("Error fetching posts:", error);
+        setError("We could not load articles right now. Please try again shortly.");
       } finally {
         setLoading(false);
       }
@@ -47,5 +42,5 @@ export function usePosts() {
     fetchPosts();
   }, []);
 
-  return { posts, loading };
+  return { posts, loading, error };
 }

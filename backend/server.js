@@ -24,6 +24,14 @@ app.post("/chat", async (req, res) => {
   try {
     const { message } = req.body;
 
+    if (typeof message !== "string" || !message.trim()) {
+      return res.status(400).json({ error: "A message is required." });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ error: "Otaku AI is not configured yet." });
+    }
+
     const completion =
       await client.chat.completions.create({
         model: "gpt-4.1-mini",
@@ -31,7 +39,7 @@ app.post("/chat", async (req, res) => {
           {
             role: "system",
             content:
-              "You are Otaku AI, an expert in anime, manga and K-pop.",
+              "You are Otaku AI, a helpful, concise assistant for anime, manga and K-pop fans. Be welcoming to Kenyan and global fandom audiences. Do not invent current news; say when you are unsure.",
           },
           {
             role: "user",
@@ -48,11 +56,13 @@ app.post("/chat", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      error: "Server error",
+      error: "Otaku AI could not answer right now.",
     });
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+const port = Number(process.env.PORT) || 5000;
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

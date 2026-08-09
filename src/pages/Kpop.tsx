@@ -1,3 +1,5 @@
+import CategoryPage from "../components/CategoryPage";
+
 export default function Kpop() {
-  return <div className="p-10">K-pop Page</div>;
+  return <CategoryPage category="K-pop" intro="Updates, playlists and fandom stories from the world of K-pop." />;
 }

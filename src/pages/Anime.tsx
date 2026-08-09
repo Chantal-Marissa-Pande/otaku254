@@ -1,3 +1,5 @@
+import CategoryPage from "../components/CategoryPage";
+
 export default function Anime() {
-  return <div className="p-10">Anime Page</div>;
+  return <CategoryPage category="Anime" intro="News, watch guides, recommendations and conversations from the anime world." />;
 }
