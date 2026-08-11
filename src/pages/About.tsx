@@ -1,119 +1,147 @@
 export default function About() {
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-white">
+    <main className="theme-page min-h-screen">
 
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
+      <section className="relative overflow-hidden">
+        <div className="mx-auto max-w-6xl px-6 py-20 md:py-28 text-center">
 
-        <p className="text-purple-400 font-semibold uppercase tracking-widest text-sm mb-4">
-          About Otaku254
-        </p>
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-500">
+            <span>✨</span>
+            About Otaku254
+          </div>
 
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Your Home for Anime, Manga & K-pop
-        </h1>
+          <h1 className="theme-heading mx-auto max-w-4xl text-4xl md:text-6xl font-bold tracking-tight">
+            Your Home for Anime,
+            <span className="block bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Manga & K-pop
+            </span>
+          </h1>
 
-        <p className="max-w-3xl mx-auto text-gray-400 text-lg leading-relaxed">
-          Otaku254 is a digital entertainment and fandom platform created
-          for people who love anime, manga and K-pop. The system brings
-          entertainment content, community discussions, personalized
-          experiences and AI-powered assistance together in one place.
-        </p>
+          <p className="theme-muted mx-auto mt-6 max-w-3xl text-lg leading-relaxed">
+            Otaku254 is a digital entertainment and
+            fandom platform created for people who
+            love anime, manga and K-pop. It brings
+            entertainment content, community
+            discussions, personalized experiences and
+            AI-powered assistance together in one place.
+          </p>
 
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Badge text="Anime" icon="🎌" />
+            <Badge text="Manga" icon="📚" />
+            <Badge text="K-pop" icon="🎵" />
+            <Badge text="Community" icon="💬" />
+            <Badge text="Otaku AI" icon="🤖" />
+          </div>
+
+        </div>
       </section>
 
 
       {/* WHAT IS OTAKU254 */}
-      <section className="max-w-6xl mx-auto px-6 pb-16">
+      <section className="mx-auto max-w-6xl px-6 pb-16">
 
-        <div className="bg-[#171725] border border-white/10 rounded-2xl p-8 md:p-10">
+        <div className="theme-card rounded-3xl border p-8 md:p-10 shadow-sm">
 
-          <h2 className="text-3xl font-bold mb-5">
-            What is Otaku254?
-          </h2>
+          <div className="flex items-start gap-5">
 
-          <p className="text-gray-400 leading-relaxed mb-5">
-            Otaku254 is designed as a centralized online hub for fans
-            interested in anime, manga and K-pop culture. Instead of
-            separating articles, discussions and recommendations across
-            different platforms, Otaku254 brings these experiences
-            together in a single application.
-          </p>
+            <div className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-purple-500/10 text-3xl">
+              🌟
+            </div>
 
-          <p className="text-gray-400 leading-relaxed">
-            The platform combines a modern content management system,
-            user authentication, community interaction and an AI
-            assistant to create an interactive experience for fans.
-          </p>
+            <div>
+              <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+                The Platform
+              </p>
+
+              <h2 className="theme-heading text-3xl font-bold mb-5">
+                What is Otaku254?
+              </h2>
+
+              <p className="theme-muted leading-relaxed mb-5">
+                Otaku254 is designed as a centralized
+                online hub for fans interested in anime,
+                manga and K-pop culture. Instead of
+                separating articles, discussions and
+                recommendations across different
+                platforms, Otaku254 brings these
+                experiences together in a single
+                application.
+              </p>
+
+              <p className="theme-muted leading-relaxed">
+                The platform combines a modern content
+                management system, user authentication,
+                community interaction and an AI assistant
+                to create an interactive experience for
+                fans.
+              </p>
+            </div>
+
+          </div>
 
         </div>
 
       </section>
 
 
-      {/* MAIN FEATURES */}
-      <section className="max-w-6xl mx-auto px-6 pb-20">
+      {/* FEATURES */}
+      <section className="mx-auto max-w-6xl px-6 pb-20">
 
-        <div className="text-center mb-10">
-
-          <p className="text-purple-400 font-semibold mb-2">
-            PLATFORM FEATURES
+        <div className="mb-10 text-center">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+            Platform Features
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <h2 className="theme-heading text-3xl md:text-4xl font-bold">
             What You Can Do on Otaku254
           </h2>
 
-          <p className="text-gray-400 mt-3 max-w-2xl mx-auto">
-            Explore content, interact with other fans and personalize
-            the way you experience the platform.
+          <p className="theme-muted mx-auto mt-3 max-w-2xl">
+            Explore content, interact with other fans
+            and personalize the way you experience
+            the platform.
           </p>
-
         </div>
 
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
 
-          {/* ANIME */}
           <FeatureCard
             icon="🎌"
             title="Anime"
             description="Discover anime-related articles, news, discussions and entertainment content."
           />
 
-          {/* MANGA */}
           <FeatureCard
             icon="📚"
             title="Manga"
             description="Explore manga-focused content, stories, recommendations and fandom discussions."
           />
 
-          {/* KPOP */}
           <FeatureCard
             icon="🎵"
             title="K-pop"
             description="Stay connected with K-pop culture, artists, trends and entertainment news."
           />
 
-          {/* COMMUNITY */}
           <FeatureCard
             icon="💬"
             title="Community"
             description="Create posts, discuss your favourite topics and interact with other members of the Otaku254 community."
           />
 
-          {/* AI */}
           <FeatureCard
             icon="🤖"
             title="Otaku AI"
             description="Ask the integrated AI assistant questions about anime, manga, K-pop, recommendations and fandom culture."
           />
 
-          {/* PERSONALIZATION */}
           <FeatureCard
             icon="⚙️"
             title="Personalization"
-            description="Customize your experience with appearance settings and content preferences for anime, manga and K-pop."
+            description="Customize your experience with appearance settings and content preferences."
           />
 
         </div>
@@ -122,24 +150,22 @@ export default function About() {
 
 
       {/* HOW IT WORKS */}
-      <section className="bg-[#141421] border-y border-white/10">
+      <section className="theme-section border-y">
 
-        <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="mx-auto max-w-6xl px-6 py-20">
 
-          <div className="text-center mb-12">
-
-            <p className="text-purple-400 font-semibold mb-2">
-              THE EXPERIENCE
+          <div className="mb-12 text-center">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+              The Experience
             </p>
 
-            <h2 className="text-3xl md:text-4xl font-bold">
+            <h2 className="theme-heading text-3xl md:text-4xl font-bold">
               How Otaku254 Works
             </h2>
-
           </div>
 
 
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid gap-8 md:grid-cols-4">
 
             <StepCard
               number="01"
@@ -172,28 +198,29 @@ export default function About() {
       </section>
 
 
-      {/* USER EXPERIENCE */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      {/* MEMBER EXPERIENCE */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
 
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
 
           <div>
 
-            <p className="text-purple-400 font-semibold mb-2">
-              FOR MEMBERS
+            <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+              For Members
             </p>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-5">
+            <h2 className="theme-heading mb-5 text-3xl md:text-4xl font-bold">
               Built Around the Fan
             </h2>
 
-            <p className="text-gray-400 leading-relaxed mb-6">
-              Otaku254 is designed to give users more than just articles.
-              Registered members can maintain a profile, participate in
-              the community and personalize their experience.
+            <p className="theme-muted mb-7 leading-relaxed">
+              Otaku254 is designed to give users more
+              than just articles. Registered members can
+              maintain a profile, participate in the
+              community and personalize their experience.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
 
               <InfoRow
                 icon="👤"
@@ -210,7 +237,7 @@ export default function About() {
               <InfoRow
                 icon="🎯"
                 title="Content Preferences"
-                description="Choose whether anime, manga and K-pop content is relevant to your interests."
+                description="Choose which categories are relevant to your interests."
               />
 
               <InfoRow
@@ -224,21 +251,22 @@ export default function About() {
           </div>
 
 
-          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/10 border border-purple-500/20 rounded-3xl p-8">
+          <div className="theme-gradient-card rounded-3xl border p-8 md:p-10">
 
-            <div className="text-6xl mb-6">
+            <div className="mb-6 text-6xl">
               🌟
             </div>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="theme-heading mb-4 text-2xl font-bold">
               One Platform. Multiple Fandoms.
             </h3>
 
-            <p className="text-gray-400 leading-relaxed">
-              Whether you are catching up on the latest anime,
-              looking for manga recommendations, following K-pop
-              trends or simply talking with other fans, Otaku254
-              provides a single space to explore and connect.
+            <p className="theme-muted leading-relaxed">
+              Whether you are catching up on the latest
+              anime, looking for manga recommendations,
+              following K-pop trends or simply talking
+              with other fans, Otaku254 provides a single
+              space to explore and connect.
             </p>
 
           </div>
@@ -249,29 +277,30 @@ export default function About() {
 
 
       {/* TECHNOLOGY */}
-      <section className="bg-[#141421] border-y border-white/10">
+      <section className="theme-section border-y">
 
-        <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="mx-auto max-w-6xl px-6 py-20">
 
-          <div className="text-center mb-10">
+          <div className="mb-10 text-center">
 
-            <p className="text-purple-400 font-semibold mb-2">
-              TECHNOLOGY
+            <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+              Technology
             </p>
 
-            <h2 className="text-3xl md:text-4xl font-bold">
+            <h2 className="theme-heading text-3xl md:text-4xl font-bold">
               Powered by Modern Technology
             </h2>
 
-            <p className="text-gray-400 mt-3 max-w-2xl mx-auto">
-              Otaku254 is built using technologies designed to support
-              a responsive, interactive and scalable web experience.
+            <p className="theme-muted mx-auto mt-3 max-w-2xl">
+              Otaku254 is built using technologies
+              designed to support a responsive,
+              interactive and scalable web experience.
             </p>
 
           </div>
 
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
             <TechCard
               name="React + TypeScript"
@@ -311,37 +340,39 @@ export default function About() {
 
 
       {/* ADMIN SYSTEM */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="mx-auto max-w-6xl px-6 py-20">
 
-        <div className="bg-[#171725] border border-white/10 rounded-2xl p-8 md:p-10">
+        <div className="theme-card rounded-3xl border p-8 md:p-10 shadow-sm">
 
-          <div className="grid md:grid-cols-[auto_1fr] gap-6">
+          <div className="flex items-start gap-6">
 
-            <div className="text-5xl">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-purple-500/10 text-3xl">
               🛠️
             </div>
 
             <div>
 
-              <p className="text-purple-400 font-semibold mb-2">
-                CONTENT MANAGEMENT
+              <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-500">
+                Content Management
               </p>
 
-              <h2 className="text-3xl font-bold mb-4">
+              <h2 className="theme-heading mb-4 text-3xl font-bold">
                 Managed Through an Admin System
               </h2>
 
-              <p className="text-gray-400 leading-relaxed mb-5">
-                Otaku254 includes administrative functionality for
-                managing the platform's content. Authorized administrators
-                can publish and manage articles, categories and other
-                platform information through protected administration
-                features.
+              <p className="theme-muted mb-5 leading-relaxed">
+                Otaku254 includes administrative
+                functionality for managing the platform's
+                content. Authorized administrators can
+                publish and manage articles, categories
+                and other platform information through
+                protected administration features.
               </p>
 
-              <p className="text-gray-400 leading-relaxed">
-                This allows the platform to maintain dynamic content
-                rather than relying on static pages.
+              <p className="theme-muted leading-relaxed">
+                This allows the platform to maintain
+                dynamic content rather than relying on
+                static pages.
               </p>
 
             </div>
@@ -354,39 +385,54 @@ export default function About() {
 
 
       {/* VISION */}
-      <section className="max-w-5xl mx-auto px-6 pb-24 text-center">
+      <section className="mx-auto max-w-5xl px-6 pb-24">
 
-        <div className="bg-gradient-to-r from-purple-600/20 via-pink-600/10 to-purple-600/20 border border-purple-500/20 rounded-3xl p-10 md:p-14">
+        <div className="theme-gradient-card rounded-3xl border p-10 text-center md:p-14">
 
-          <p className="text-purple-400 font-semibold mb-3">
-            THE VISION
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-purple-500">
+            The Vision
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold mb-5">
+          <h2 className="theme-heading mb-5 text-3xl md:text-4xl font-bold">
             More Than a Blog
           </h2>
 
-          <p className="text-gray-400 leading-relaxed max-w-3xl mx-auto">
-            Otaku254 is designed to grow from an entertainment blog
-            into a broader digital fandom ecosystem where fans can
-            discover content, exchange ideas, receive recommendations,
-            interact with AI and build a community around the interests
-            they love.
+          <p className="theme-muted mx-auto max-w-3xl leading-relaxed">
+            Otaku254 is designed to grow from an
+            entertainment blog into a broader digital
+            fandom ecosystem where fans can discover
+            content, exchange ideas, receive
+            recommendations, interact with AI and build
+            a community around the interests they love.
           </p>
 
         </div>
 
       </section>
 
-
-    </div>
+    </main>
   );
 }
 
 
-/*
- * FEATURE CARD
- */
+/* BADGE */
+function Badge({
+  text,
+  icon,
+}: {
+  text: string;
+  icon: string;
+}) {
+  return (
+    <span className="theme-badge inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
+      <span>{icon}</span>
+      {text}
+    </span>
+  );
+}
+
+
+/* FEATURE CARD */
 function FeatureCard({
   icon,
   title,
@@ -397,17 +443,17 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="bg-[#171725] border border-white/10 rounded-2xl p-6 hover:border-purple-500/40 hover:-translate-y-1 transition-all duration-200">
+    <div className="theme-card group rounded-2xl border p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-500/40 hover:shadow-lg">
 
-      <div className="text-4xl mb-4">
+      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-2xl transition-transform duration-200 group-hover:scale-110">
         {icon}
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
+      <h3 className="theme-heading mb-2 text-xl font-semibold">
         {title}
       </h3>
 
-      <p className="text-gray-400 text-sm leading-relaxed">
+      <p className="theme-muted text-sm leading-relaxed">
         {description}
       </p>
 
@@ -416,9 +462,7 @@ function FeatureCard({
 }
 
 
-/*
- * STEP CARD
- */
+/* STEP CARD */
 function StepCard({
   number,
   title,
@@ -431,15 +475,15 @@ function StepCard({
   return (
     <div className="text-center">
 
-      <div className="w-12 h-12 mx-auto mb-5 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold">
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10 font-bold text-purple-500">
         {number}
       </div>
 
-      <h3 className="text-lg font-semibold mb-2">
+      <h3 className="theme-heading mb-2 text-lg font-semibold">
         {title}
       </h3>
 
-      <p className="text-gray-400 text-sm leading-relaxed">
+      <p className="theme-muted text-sm leading-relaxed">
         {description}
       </p>
 
@@ -448,9 +492,7 @@ function StepCard({
 }
 
 
-/*
- * INFORMATION ROW
- */
+/* INFORMATION ROW */
 function InfoRow({
   icon,
   title,
@@ -463,16 +505,16 @@ function InfoRow({
   return (
     <div className="flex gap-4">
 
-      <div className="w-10 h-10 shrink-0 rounded-lg bg-purple-600/10 flex items-center justify-center">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10">
         {icon}
       </div>
 
       <div>
-        <h3 className="font-semibold">
+        <h3 className="theme-heading font-semibold">
           {title}
         </h3>
 
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="theme-muted mt-1 text-sm">
           {description}
         </p>
       </div>
@@ -482,9 +524,7 @@ function InfoRow({
 }
 
 
-/*
- * TECHNOLOGY CARD
- */
+/* TECHNOLOGY CARD */
 function TechCard({
   name,
   description,
@@ -493,13 +533,15 @@ function TechCard({
   description: string;
 }) {
   return (
-    <div className="bg-[#171725] border border-white/10 rounded-xl p-5">
+    <div className="theme-card rounded-2xl border p-5 shadow-sm">
 
-      <h3 className="font-semibold mb-2">
+      <div className="mb-3 h-1 w-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
+
+      <h3 className="theme-heading mb-2 font-semibold">
         {name}
       </h3>
 
-      <p className="text-sm text-gray-400 leading-relaxed">
+      <p className="theme-muted text-sm leading-relaxed">
         {description}
       </p>
 

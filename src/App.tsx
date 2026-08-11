@@ -36,40 +36,28 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import { auth, db } from "./firebase";
 
-type Theme =
-  | "dark"
-  | "light"
-  | "system";
+type Theme = "dark" | "light" | "system";
 
 /*
  * Apply the user's selected theme.
  */
-function applyUserTheme(
-  theme: Theme
-) {
-  const root =
-    document.documentElement;
+function applyUserTheme(theme: Theme) {
+  const root = document.documentElement;
 
-  let actualTheme:
-    | "dark"
-    | "light";
+  let actualTheme: "dark" | "light";
 
   if (theme === "system") {
-    const prefersDark =
-      window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
 
-    actualTheme = prefersDark
-      ? "dark"
-      : "light";
+    actualTheme = prefersDark ? "dark" : "light";
   } else {
     actualTheme = theme;
   }
 
   /*
-   * data-theme controls the actual
-   * appearance currently being displayed.
+   * Store the actual theme being displayed.
    */
   root.setAttribute(
     "data-theme",
@@ -77,18 +65,35 @@ function applyUserTheme(
   );
 
   /*
-   * data-theme-choice remembers what
-   * the user selected.
+   * Store the user's selected option.
    */
   root.setAttribute(
     "data-theme-choice",
     theme
   );
+
+  /*
+   * IMPORTANT:
+   *
+   * Tailwind's dark: classes depend on
+   * the "dark" class being present on <html>.
+   *
+   * Without this, classes such as:
+   *
+   * dark:bg-[#171725]
+   * dark:text-white
+   * dark:border-gray-800
+   *
+   * will not activate.
+   */
+  root.classList.toggle(
+    "dark",
+    actualTheme === "dark"
+  );
 }
 
 export default function App() {
-  const location =
-    useLocation();
+  const location = useLocation();
 
   /*
    * Load saved theme whenever
@@ -99,7 +104,6 @@ export default function App() {
       onAuthStateChanged(
         auth,
         async (user) => {
-
           /*
            * Not logged in:
            * use dark mode by default.
@@ -110,19 +114,16 @@ export default function App() {
           }
 
           try {
-            const userRef =
-              doc(
-                db,
-                "users",
-                user.uid
-              );
+            const userRef = doc(
+              db,
+              "users",
+              user.uid
+            );
 
             const userSnapshot =
               await getDoc(userRef);
 
-            if (
-              userSnapshot.exists()
-            ) {
+            if (userSnapshot.exists()) {
               const data =
                 userSnapshot.data();
 
@@ -134,26 +135,20 @@ export default function App() {
                 savedTheme
               );
             } else {
-              applyUserTheme(
-                "dark"
-              );
+              applyUserTheme("dark");
             }
-
           } catch (error) {
             console.error(
               "Error loading user theme:",
               error
             );
 
-            applyUserTheme(
-              "dark"
-            );
+            applyUserTheme("dark");
           }
         }
       );
 
-    return () =>
-      unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   /*
@@ -177,8 +172,7 @@ export default function App() {
           );
 
         if (
-          selectedTheme !==
-          "system"
+          selectedTheme !== "system"
         ) {
           return;
         }
@@ -191,6 +185,15 @@ export default function App() {
         document.documentElement.setAttribute(
           "data-theme",
           actualTheme
+        );
+
+        /*
+         * Keep Tailwind's dark variant
+         * synchronized as well.
+         */
+        document.documentElement.classList.toggle(
+          "dark",
+          actualTheme === "dark"
         );
       };
 
@@ -211,13 +214,11 @@ export default function App() {
    * Hide chatbot on authentication pages.
    */
   const hideChatbot =
-    location.pathname ===
-      "/login" ||
-    location.pathname ===
-      "/register";
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
   return (
-    <div className="otaku-app flex flex-col min-h-screen">
+    <div className="otaku-app flex flex-col min-h-screen bg-white text-gray-900 transition-colors duration-300 dark:bg-[#0f0f1a] dark:text-white">
 
       <Navbar />
 
