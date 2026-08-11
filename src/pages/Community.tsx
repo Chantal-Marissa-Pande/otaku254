@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
 
-import { db } from "../firebase";
+import {
+  onAuthStateChanged,
+  type User,
+} from "firebase/auth";
 
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
 } from "firebase/firestore";
 
+import { auth, db } from "../firebase";
+
 import CategoryFilter from "../components/community/CategoryFilter";
 import CreatePost from "../components/community/CreatePost";
 import CommunityPost from "../components/community/CommunityPost";
+
 
 interface Comment {
   id: string;
@@ -22,6 +30,7 @@ interface Comment {
   content: string;
   time: string;
 }
+
 
 interface CommunityPostData {
   id: string;
@@ -35,6 +44,7 @@ interface CommunityPostData {
   comments: Comment[];
 }
 
+
 const categories = [
   "All",
   "Anime",
@@ -43,13 +53,17 @@ const categories = [
   "General",
 ];
 
+
 export default function Community() {
-  const [posts, setPosts] = useState<CommunityPostData[]>([]);
+
+  const [posts, setPosts] =
+    useState<CommunityPostData[]>([]);
 
   const [activeCategory, setActiveCategory] =
     useState("All");
 
-  const [newPost, setNewPost] = useState("");
+  const [newPost, setNewPost] =
+    useState("");
 
   const [newPostCategory, setNewPostCategory] =
     useState("General");
@@ -60,162 +74,355 @@ export default function Community() {
   const [openComments, setOpenComments] =
     useState<string | null>(null);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
+
+  const [currentUser, setCurrentUser] =
+    useState<User | null>(null);
+
+  const [currentUsername, setCurrentUsername] =
+    useState("Anonymous");
+
+
+  /*
+   * LOAD CURRENT USER
+   */
+  useEffect(() => {
+
+    const unsubscribe =
+      onAuthStateChanged(
+        auth,
+        async (user) => {
+
+          setCurrentUser(user);
+
+          if (!user) {
+            setCurrentUsername(
+              "Anonymous"
+            );
+
+            return;
+          }
+
+          let username =
+            user.displayName ||
+            "Otaku User";
+
+          /*
+           * Check Firestore for the
+           * saved username.
+           */
+          try {
+
+            const userRef =
+              doc(
+                db,
+                "users",
+                user.uid
+              );
+
+            const snapshot =
+              await getDoc(userRef);
+
+            if (
+              snapshot.exists()
+            ) {
+
+              const data =
+                snapshot.data();
+
+              if (
+                data.username &&
+                typeof data.username ===
+                  "string"
+              ) {
+                username =
+                  data.username;
+              }
+            }
+
+          } catch (error) {
+
+            console.error(
+              "Error loading username:",
+              error
+            );
+
+          }
+
+          setCurrentUsername(
+            username
+          );
+        }
+      );
+
+    return () =>
+      unsubscribe();
+
+  }, []);
+
 
   /*
    * LOAD POSTS
    */
   useEffect(() => {
-    const postsQuery = query(
-      collection(db, "communityPosts"),
-      orderBy("createdAt", "desc")
-    );
 
-    const unsubscribe = onSnapshot(
-      postsQuery,
-      (snapshot) => {
-        const loadedPosts: CommunityPostData[] =
-          snapshot.docs.map((doc) => {
-            const data = doc.data();
-
-            return {
-              id: doc.id,
-              username: data.username || "Anonymous",
-              avatar: data.avatar || "A",
-              category: data.category || "General",
-              content: data.content || "",
-              likes: data.likes || 0,
-              liked: false,
-              time: formatTime(data.createdAt),
-              comments: [],
-            };
-          });
-
-        setPosts(loadedPosts);
-        setLoading(false);
-      },
-      (error) => {
-        console.error(
-          "Error loading community posts:",
-          error
-        );
-
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, []);
-
-  /*
-   * LOAD COMMENTS FOR POSTS
-   */
-  useEffect(() => {
-    if (posts.length === 0) return;
-
-    const unsubscribers = posts.map((post) => {
-      const commentsQuery = query(
+    const postsQuery =
+      query(
         collection(
           db,
-          "communityPosts",
-          post.id,
-          "comments"
+          "communityPosts"
         ),
-        orderBy("createdAt", "asc")
+        orderBy(
+          "createdAt",
+          "desc"
+        )
       );
 
-      return onSnapshot(
-        commentsQuery,
+    const unsubscribe =
+      onSnapshot(
+        postsQuery,
         (snapshot) => {
-          const comments: Comment[] =
-            snapshot.docs.map((doc) => {
-              const data = doc.data();
 
-              return {
-                id: doc.id,
-                username:
-                  data.username || "Anonymous",
-                avatar: data.avatar || "A",
-                content: data.content || "",
-                time: formatTime(
-                  data.createdAt
-                ),
-              };
-            });
+          const loadedPosts:
+            CommunityPostData[] =
+            snapshot.docs.map(
+              (postDoc) => {
 
-          setPosts((currentPosts) =>
-            currentPosts.map((currentPost) =>
-              currentPost.id === post.id
-                ? {
-                    ...currentPost,
-                    comments,
-                  }
-                : currentPost
-            )
+                const data =
+                  postDoc.data();
+
+                return {
+
+                  id: postDoc.id,
+
+                  username:
+                    data.username ||
+                    "Anonymous",
+
+                  avatar:
+                    data.avatar ||
+                    (
+                      data.username ||
+                      "A"
+                    )
+                      .charAt(0)
+                      .toUpperCase(),
+
+                  category:
+                    data.category ||
+                    "General",
+
+                  content:
+                    data.content ||
+                    "",
+
+                  likes:
+                    data.likes ||
+                    0,
+
+                  liked: false,
+
+                  time:
+                    formatTime(
+                      data.createdAt
+                    ),
+
+                  comments: [],
+                };
+              }
+            );
+
+          setPosts(
+            loadedPosts
           );
+
+          setLoading(false);
         },
+
         (error) => {
+
           console.error(
-            `Error loading comments for ${post.id}:`,
+            "Error loading community posts:",
             error
           );
+
+          setLoading(false);
         }
       );
-    });
+
+    return () =>
+      unsubscribe();
+
+  }, []);
+
+
+  /*
+   * LOAD COMMENTS
+   */
+  useEffect(() => {
+
+    if (
+      posts.length === 0
+    ) {
+      return;
+    }
+
+    const unsubscribers =
+      posts.map((post) => {
+
+        const commentsQuery =
+          query(
+            collection(
+              db,
+              "communityPosts",
+              post.id,
+              "comments"
+            ),
+            orderBy(
+              "createdAt",
+              "asc"
+            )
+          );
+
+        return onSnapshot(
+          commentsQuery,
+          (snapshot) => {
+
+            const comments:
+              Comment[] =
+              snapshot.docs.map(
+                (commentDoc) => {
+
+                  const data =
+                    commentDoc.data();
+
+                  const commentUsername =
+                    data.username ||
+                    "Anonymous";
+
+                  return {
+
+                    id:
+                      commentDoc.id,
+
+                    username:
+                      commentUsername,
+
+                    avatar:
+                      data.avatar ||
+                      commentUsername
+                        .charAt(0)
+                        .toUpperCase(),
+
+                    content:
+                      data.content ||
+                      "",
+
+                    time:
+                      formatTime(
+                        data.createdAt
+                      ),
+                  };
+                }
+              );
+
+            setPosts(
+              (currentPosts) =>
+                currentPosts.map(
+                  (currentPost) =>
+                    currentPost.id ===
+                    post.id
+                      ? {
+                          ...currentPost,
+                          comments,
+                        }
+                      : currentPost
+                )
+            );
+          },
+
+          (error) => {
+
+            console.error(
+              `Error loading comments for ${post.id}:`,
+              error
+            );
+
+          }
+        );
+      });
 
     return () => {
-      unsubscribers.forEach((unsubscribe) =>
-        unsubscribe()
+
+      unsubscribers.forEach(
+        (unsubscribe) =>
+          unsubscribe()
       );
+
     };
+
   }, [posts.length]);
+
 
   /*
    * FORMAT TIME
    */
-  const formatTime = (timestamp: any) => {
+  const formatTime = (
+    timestamp: any
+  ) => {
+
     if (!timestamp) {
       return "Just now";
     }
 
-    const date = timestamp.toDate
-      ? timestamp.toDate()
-      : new Date(timestamp);
+    const date =
+      timestamp.toDate
+        ? timestamp.toDate()
+        : new Date(timestamp);
 
     const difference =
-      Date.now() - date.getTime();
+      Date.now() -
+      date.getTime();
 
-    const minutes = Math.floor(
-      difference / 60000
-    );
+    const minutes =
+      Math.floor(
+        difference / 60000
+      );
 
     if (minutes < 1) {
       return "Just now";
     }
 
     if (minutes < 60) {
+
       return `${minutes} ${
         minutes === 1
           ? "minute"
           : "minutes"
       } ago`;
+
     }
 
-    const hours = Math.floor(
-      minutes / 60
-    );
+    const hours =
+      Math.floor(
+        minutes / 60
+      );
 
     if (hours < 24) {
+
       return `${hours} ${
         hours === 1
           ? "hour"
           : "hours"
       } ago`;
+
     }
 
-    const days = Math.floor(
-      hours / 24
-    );
+    const days =
+      Math.floor(
+        hours / 24
+      );
 
     return `${days} ${
       days === 1
@@ -223,6 +430,7 @@ export default function Community() {
         : "days"
     } ago`;
   };
+
 
   /*
    * FILTER POSTS
@@ -232,214 +440,423 @@ export default function Community() {
       ? posts
       : posts.filter(
           (post) =>
-            post.category === activeCategory
+            post.category ===
+            activeCategory
         );
+
 
   /*
    * CREATE POST
    */
-  const handleCreatePost = async () => {
-    if (!newPost.trim()) return;
+  const handleCreatePost =
+    async () => {
 
-    try {
-      await addDoc(
-        collection(db, "communityPosts"),
-        {
-          username: "You",
-          avatar: "YO",
-          category: newPostCategory,
-          content: newPost.trim(),
-          likes: 0,
-          createdAt: serverTimestamp(),
-        }
-      );
+      if (
+        !newPost.trim()
+      ) {
+        return;
+      }
 
-      setNewPost("");
-      setNewPostCategory("General");
-    } catch (error) {
-      console.error(
-        "Error creating community post:",
-        error
-      );
+      if (!currentUser) {
 
-      alert("Could not create post.");
-    }
-  };
+        alert(
+          "Please log in to create a post."
+        );
+
+        return;
+      }
+
+      try {
+
+        await addDoc(
+          collection(
+            db,
+            "communityPosts"
+          ),
+          {
+
+            uid:
+              currentUser.uid,
+
+            username:
+              currentUsername,
+
+            avatar:
+              currentUsername
+                .charAt(0)
+                .toUpperCase(),
+
+            category:
+              newPostCategory,
+
+            content:
+              newPost.trim(),
+
+            likes: 0,
+
+            likedBy: [],
+
+            createdAt:
+              serverTimestamp(),
+          }
+        );
+
+        setNewPost("");
+
+        setNewPostCategory(
+          "General"
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error creating community post:",
+          error
+        );
+
+        alert(
+          "Could not create post."
+        );
+      }
+    };
+
 
   /*
    * LIKE / UNLIKE
    *
    * Still temporary.
    */
-  const handleLike = (postId: string) => {
-    setPosts((currentPosts) =>
-      currentPosts.map((post) => {
-        if (post.id !== postId) {
-          return post;
-        }
+  const handleLike =
+    (postId: string) => {
 
-        return {
-          ...post,
-          liked: !post.liked,
-          likes: post.liked
-            ? post.likes - 1
-            : post.likes + 1,
-        };
-      })
-    );
-  };
+      setPosts(
+        (currentPosts) =>
+          currentPosts.map(
+            (post) => {
+
+              if (
+                post.id !==
+                postId
+              ) {
+                return post;
+              }
+
+              return {
+
+                ...post,
+
+                liked:
+                  !post.liked,
+
+                likes:
+                  post.liked
+                    ? post.likes - 1
+                    : post.likes + 1,
+              };
+            }
+          )
+      );
+    };
+
 
   /*
    * OPEN / CLOSE COMMENTS
    */
-  const toggleComments = (postId: string) => {
-    setOpenComments((current) =>
-      current === postId
-        ? null
-        : postId
-    );
-  };
+  const toggleComments =
+    (postId: string) => {
+
+      setOpenComments(
+        (current) =>
+          current === postId
+            ? null
+            : postId
+      );
+    };
+
 
   /*
    * COMMENT INPUT
    */
-  const handleCommentChange = (
-    postId: string,
-    value: string
-  ) => {
-    setCommentInputs((current) => ({
-      ...current,
-      [postId]: value,
-    }));
-  };
+  const handleCommentChange =
+    (
+      postId: string,
+      value: string
+    ) => {
+
+      setCommentInputs(
+        (current) => ({
+          ...current,
+          [postId]:
+            value,
+        })
+      );
+    };
+
 
   /*
-   * ADD COMMENT TO FIRESTORE
+   * ADD COMMENT
    */
-  const handleAddComment = async (
-    postId: string
-  ) => {
-    const commentText =
-      commentInputs[postId]?.trim();
+  const handleAddComment =
+    async (
+      postId: string
+    ) => {
 
-    if (!commentText) return;
+      const commentText =
+        commentInputs[
+          postId
+        ]?.trim();
 
-    try {
-      await addDoc(
-        collection(
-          db,
-          "communityPosts",
-          postId,
-          "comments"
-        ),
-        {
-          username: "You",
-          avatar: "YO",
-          content: commentText,
-          createdAt: serverTimestamp(),
-        }
-      );
+      if (!commentText) {
+        return;
+      }
 
-      setCommentInputs((current) => ({
-        ...current,
-        [postId]: "",
-      }));
-    } catch (error) {
-      console.error(
-        "Error adding comment:",
-        error
-      );
+      if (!currentUser) {
 
-      alert("Could not add comment.");
-    }
-  };
+        alert(
+          "Please log in to comment."
+        );
+
+        return;
+      }
+
+      try {
+
+        await addDoc(
+          collection(
+            db,
+            "communityPosts",
+            postId,
+            "comments"
+          ),
+          {
+
+            uid:
+              currentUser.uid,
+
+            username:
+              currentUsername,
+
+            avatar:
+              currentUsername
+                .charAt(0)
+                .toUpperCase(),
+
+            content:
+              commentText,
+
+            createdAt:
+              serverTimestamp(),
+          }
+        );
+
+        setCommentInputs(
+          (current) => ({
+            ...current,
+            [postId]: "",
+          })
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error adding comment:",
+          error
+        );
+
+        alert(
+          "Could not add comment."
+        );
+      }
+    };
+
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] px-4 py-10">
+    <div
+      className="min-h-screen px-4 py-10"
+      style={{
+        background:
+          "var(--otaku-bg)",
+        color:
+          "var(--otaku-text)",
+      }}
+    >
+
       <div className="mx-auto max-w-5xl">
 
-        {/* Header */}
+        {/* HEADER */}
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold">
+
+          <h1
+            className="text-4xl font-bold"
+            style={{
+              color:
+                "var(--otaku-text)",
+            }}
+          >
             Community
           </h1>
 
-          <p className="mt-2 text-gray-400">
-            Connect with anime, manga and K-pop fans.
+          <p
+            className="mt-2"
+            style={{
+              color:
+                "var(--otaku-muted)",
+            }}
+          >
+            Connect with anime,
+            manga and K-pop fans.
           </p>
+
         </div>
 
-        {/* Create Post */}
+
+        {/* CREATE POST */}
+
         <CreatePost
           newPost={newPost}
-          newPostCategory={newPostCategory}
-          onPostChange={setNewPost}
-          onCategoryChange={setNewPostCategory}
-          onCreatePost={handleCreatePost}
+          newPostCategory={
+            newPostCategory
+          }
+          onPostChange={
+            setNewPost
+          }
+          onCategoryChange={
+            setNewPostCategory
+          }
+          onCreatePost={
+            handleCreatePost
+          }
         />
 
-        {/* Categories */}
+
+        {/* CATEGORIES */}
+
         <CategoryFilter
-          categories={categories}
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
+          categories={
+            categories
+          }
+          activeCategory={
+            activeCategory
+          }
+          onCategoryChange={
+            setActiveCategory
+          }
         />
 
-        {/* Posts */}
+
+        {/* POSTS */}
+
         <div className="space-y-5">
 
           {loading && (
-            <div className="rounded-2xl border border-gray-800 bg-[#171725] p-10 text-center">
-              <p className="text-gray-400">
-                Loading community posts...
+            <div
+              className="rounded-2xl p-10 text-center"
+              style={{
+                background:
+                  "var(--otaku-surface)",
+                border:
+                  "1px solid var(--otaku-border)",
+              }}
+            >
+              <p
+                style={{
+                  color:
+                    "var(--otaku-muted)",
+                }}
+              >
+                Loading community
+                posts...
               </p>
             </div>
           )}
 
+
           {!loading &&
-            filteredPosts.map((post) => (
-              <CommunityPost
-                key={post.id}
-                post={post}
-                commentsOpen={
-                  openComments === post.id
-                }
-                commentInput={
-                  commentInputs[post.id] || ""
-                }
-                onLike={() =>
-                  handleLike(post.id)
-                }
-                onToggleComments={() =>
-                  toggleComments(post.id)
-                }
-                onCommentChange={(value) =>
-                  handleCommentChange(
-                    post.id,
+            filteredPosts.map(
+              (post) => (
+                <CommunityPost
+                  key={post.id}
+                  post={post}
+                  commentsOpen={
+                    openComments ===
+                    post.id
+                  }
+                  commentInput={
+                    commentInputs[
+                      post.id
+                    ] || ""
+                  }
+                  onLike={() =>
+                    handleLike(
+                      post.id
+                    )
+                  }
+                  onToggleComments={() =>
+                    toggleComments(
+                      post.id
+                    )
+                  }
+                  onCommentChange={(
                     value
-                  )
-                }
-                onAddComment={() =>
-                  handleAddComment(post.id)
-                }
-              />
-            ))}
+                  ) =>
+                    handleCommentChange(
+                      post.id,
+                      value
+                    )
+                  }
+                  onAddComment={() =>
+                    handleAddComment(
+                      post.id
+                    )
+                  }
+                />
+              )
+            )}
+
 
           {!loading &&
-            filteredPosts.length === 0 && (
-              <div className="rounded-2xl border border-gray-800 bg-[#171725] p-10 text-center">
-                <p className="text-gray-400">
-                  No posts in this category yet.
+            filteredPosts.length ===
+              0 && (
+
+              <div
+                className="rounded-2xl p-10 text-center"
+                style={{
+                  background:
+                    "var(--otaku-surface)",
+                  border:
+                    "1px solid var(--otaku-border)",
+                }}
+              >
+
+                <p
+                  style={{
+                    color:
+                      "var(--otaku-muted)",
+                  }}
+                >
+                  No posts in this
+                  category yet.
                 </p>
 
-                <p className="mt-2 text-sm text-gray-600">
-                  Be the first person to start a discussion!
+                <p
+                  className="mt-2 text-sm"
+                  style={{
+                    color:
+                      "var(--otaku-muted)",
+                  }}
+                >
+                  Be the first person
+                  to start a discussion!
                 </p>
+
               </div>
             )}
 
         </div>
+
       </div>
+
     </div>
   );
 }

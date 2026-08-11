@@ -1,1 +1,266 @@
 @import "tailwindcss";
+
+/* =========================================
+   OTaku254 GLOBAL THEME
+   ========================================= */
+
+:root {
+  --otaku-bg: #0f0f1a;
+  --otaku-surface: #171725;
+  --otaku-surface-hover: #202035;
+
+  --otaku-text: #ffffff;
+  --otaku-muted: #9ca3af;
+
+  --otaku-border: rgba(255, 255, 255, 0.1);
+
+  --otaku-accent: #9333ea;
+  --otaku-accent-hover: #7e22ce;
+  --otaku-accent-soft: rgba(147, 51, 234, 0.15);
+}
+
+/* =========================================
+   DARK
+   ========================================= */
+
+:root[data-theme="dark"] {
+  --otaku-bg: #0f0f1a;
+  --otaku-surface: #171725;
+  --otaku-surface-hover: #202035;
+
+  --otaku-text: #ffffff;
+  --otaku-muted: #9ca3af;
+
+  --otaku-border: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   LIGHT
+   ========================================= */
+
+:root[data-theme="light"] {
+  --otaku-bg: #f8fafc;
+  --otaku-surface: #ffffff;
+  --otaku-surface-hover: #f1f5f9;
+
+  --otaku-text: #111827;
+  --otaku-muted: #6b7280;
+
+  --otaku-border: rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================
+   PURPLE
+   ========================================= */
+
+:root[data-accent="purple"] {
+  --otaku-accent: #9333ea;
+  --otaku-accent-hover: #7e22ce;
+  --otaku-accent-soft: rgba(147, 51, 234, 0.15);
+}
+
+/* =========================================
+   BLUE
+   ========================================= */
+
+:root[data-accent="blue"] {
+  --otaku-accent: #3b82f6;
+  --otaku-accent-hover: #2563eb;
+  --otaku-accent-soft: rgba(59, 130, 246, 0.15);
+}
+
+/* =========================================
+   PINK
+   ========================================= */
+
+:root[data-accent="pink"] {
+  --otaku-accent: #ec4899;
+  --otaku-accent-hover: #db2777;
+  --otaku-accent-soft: rgba(236, 72, 153, 0.15);
+}
+
+/* =========================================
+   GREEN
+   ========================================= */
+
+:root[data-accent="green"] {
+  --otaku-accent: #22c55e;
+  --otaku-accent-hover: #16a34a;
+  --otaku-accent-soft: rgba(34, 197, 94, 0.15);
+}
+
+/* =========================================
+   RED
+   ========================================= */
+
+:root[data-accent="red"] {
+  --otaku-accent: #ef4444;
+  --otaku-accent-hover: #dc2626;
+  --otaku-accent-soft: rgba(239, 68, 68, 0.15);
+}
+
+/* =========================================
+   GLOBAL BODY
+   ========================================= */
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--otaku-bg);
+  color: var(--otaku-text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================
+   OTaku254 APP
+   ========================================= */
+
+.otaku-app {
+  min-height: 100vh;
+
+  background: var(--otaku-bg);
+  color: var(--otaku-text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================
+   THEME CARDS
+   ========================================= */
+
+.theme-card {
+  background: var(--otaku-surface);
+  border: 1px solid var(--otaku-border);
+
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* =========================================
+   THEME BUTTON
+   ========================================= */
+
+.theme-button {
+  background: var(--otaku-accent);
+  color: white;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.theme-button:hover {
+  background: var(--otaku-accent-hover);
+}
+
+.theme-button:active {
+  transform: scale(0.98);
+}
+
+/* =========================================
+   ACCENT TEXT
+   ========================================= */
+
+.theme-accent {
+  color: var(--otaku-accent);
+}
+
+/* =========================================
+   ACCENT BORDER
+   ========================================= */
+
+.theme-border {
+  border-color: var(--otaku-accent);
+}
+
+/* =========================================
+   ACCENT BACKGROUND
+   ========================================= */
+
+.theme-accent-bg {
+  background: var(--otaku-accent);
+}
+
+/* =========================================
+   SMOOTH THEME TRANSITIONS
+   ========================================= */
+
+* {
+  transition-property:
+    background-color,
+    border-color,
+    color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* =========================================
+   LIGHT MODE COMPATIBILITY
+   ========================================= */
+
+/*
+ * Inputs, textareas and selects should always
+ * use the current Otaku254 theme.
+ */
+.otaku-app input,
+.otaku-app textarea,
+.otaku-app select {
+  color: var(--otaku-text);
+  background-color: var(--otaku-surface);
+  border-color: var(--otaku-border);
+}
+
+/*
+ * Input placeholders.
+ */
+.otaku-app input::placeholder,
+.otaku-app textarea::placeholder {
+  color: var(--otaku-muted);
+  opacity: 1;
+}
+
+/*
+ * Light mode: Tailwind's gray text should
+ * remain readable.
+ */
+:root[data-theme="light"] .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+:root[data-theme="light"] .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+:root[data-theme="light"] .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+/*
+ * Light mode borders.
+ */
+:root[data-theme="light"] .border-gray-800 {
+  border-color: #e5e7eb !important;
+}
+
+/*
+ * Prevent hard-coded dark backgrounds from
+ * making major containers unreadable.
+ */
+:root[data-theme="light"] .bg-\[\#0f0f1a\] {
+  background-color: var(--otaku-bg) !important;
+}
+
+:root[data-theme="light"] .bg-\[\#171725\] {
+  background-color: var(--otaku-surface) !important;
+}

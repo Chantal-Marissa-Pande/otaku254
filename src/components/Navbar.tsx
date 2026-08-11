@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  onAuthStateChanged,
+  signOut,
+  type User,
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -11,34 +15,39 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  /*
+   * Load authenticated user
+   */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (currentUser) => {
         setUser(currentUser);
 
-        if (currentUser) {
-          try {
-            const userDoc = await getDoc(
-              doc(db, "users", currentUser.uid)
-            );
+        if (!currentUser) {
+          setIsAdmin(false);
+          return;
+        }
 
-            if (userDoc.exists()) {
-              const userData = userDoc.data();
-              setIsAdmin(userData.role === "admin");
-            } else {
-              setIsAdmin(false);
-            }
-          } catch (error) {
-            console.error(
-              "Error checking user role:",
-              error
-            );
+        try {
+          const userDoc = await getDoc(
+            doc(db, "users", currentUser.uid)
+          );
 
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setIsAdmin(userData.role === "admin");
+          } else {
             setIsAdmin(false);
           }
-        } else {
+        } catch (error) {
+          console.error(
+            "Error checking user role:",
+            error
+          );
+
           setIsAdmin(false);
         }
       }
@@ -47,6 +56,21 @@ export default function Navbar() {
     return unsubscribe;
   }, []);
 
+  /*
+   * IMPORTANT:
+   * Close all dropdowns whenever the user changes page.
+   *
+   * This prevents the profile menu from remaining open
+   * and covering the Settings/Profile page.
+   */
+  useEffect(() => {
+    setIsProfileOpen(false);
+    setIsSettingsOpen(false);
+  }, [location.pathname]);
+
+  /*
+   * Logout
+   */
   const logout = async () => {
     try {
       await signOut(auth);
@@ -66,9 +90,27 @@ export default function Navbar() {
     user?.displayName || "Profile";
 
   return (
-    <nav className="bg-black/70 backdrop-blur border-b border-purple-500/20 relative z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-
+    <nav
+      className="
+        bg-black/70
+        backdrop-blur
+        border-b
+        border-purple-500/20
+        relative
+        z-50
+      "
+    >
+      <div
+        className="
+          max-w-7xl
+          mx-auto
+          px-6
+          py-4
+          flex
+          justify-between
+          items-center
+        "
+      >
         {/* LOGO */}
         <Link
           to="/"
@@ -77,6 +119,7 @@ export default function Navbar() {
           <span className="text-purple-500">
             Otaku
           </span>
+
           <span className="text-pink-500">
             254
           </span>
@@ -134,11 +177,15 @@ export default function Navbar() {
             Community
           </Link>
 
-          {/* ADMIN LINK */}
+          {/* ADMIN */}
           {isAdmin && (
             <Link
               to="/admin"
-              className="text-purple-400 hover:text-purple-300 transition"
+              className="
+                text-purple-400
+                hover:text-purple-300
+                transition
+              "
             >
               Admin
             </Link>
@@ -149,14 +196,20 @@ export default function Navbar() {
 
             <button
               onClick={() => {
-                setIsProfileOpen(!isProfileOpen);
+                setIsProfileOpen(
+                  !isProfileOpen
+                );
                 setIsSettingsOpen(false);
               }}
-              className="flex items-center gap-2 hover:text-purple-400 transition"
+              className="
+                flex
+                items-center
+                gap-2
+                hover:text-purple-400
+                transition
+              "
             >
-              <span>
-                👤
-              </span>
+              <span>👤</span>
 
               <span className="max-w-[100px] truncate">
                 {displayName}
@@ -168,11 +221,33 @@ export default function Navbar() {
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-3 w-52 bg-[#151522] border border-white/10 rounded-xl shadow-xl overflow-hidden">
+              <div
+                className="
+                  absolute
+                  right-0
+                  top-full
+                  mt-3
+                  w-52
+                  rounded-xl
+                  overflow-hidden
+                  shadow-2xl
+                  border
+                  border-white/10
+                  bg-[#151522]
+                  z-[100]
+                "
+              >
 
                 {!user ? (
                   <>
-                    <div className="px-4 py-3 border-b border-white/10">
+                    <div
+                      className="
+                        px-4
+                        py-3
+                        border-b
+                        border-white/10
+                      "
+                    >
                       <p className="font-semibold">
                         Welcome to Otaku254
                       </p>
@@ -184,28 +259,40 @@ export default function Navbar() {
 
                     <Link
                       to="/register"
-                      onClick={() =>
-                        setIsProfileOpen(false)
-                      }
-                      className="block px-4 py-3 hover:bg-purple-600/20 transition"
+                      className="
+                        block
+                        px-4
+                        py-3
+                        hover:bg-purple-600/20
+                        transition
+                      "
                     >
                       Create Account
                     </Link>
 
                     <Link
                       to="/login"
-                      onClick={() =>
-                        setIsProfileOpen(false)
-                      }
-                      className="block px-4 py-3 hover:bg-purple-600/20 transition"
+                      className="
+                        block
+                        px-4
+                        py-3
+                        hover:bg-purple-600/20
+                        transition
+                      "
                     >
                       Login
                     </Link>
                   </>
                 ) : (
                   <>
-                    <div className="px-4 py-3 border-b border-white/10">
-
+                    <div
+                      className="
+                        px-4
+                        py-3
+                        border-b
+                        border-white/10
+                      "
+                    >
                       <p className="font-semibold truncate">
                         {user.displayName ||
                           "Otaku User"}
@@ -214,41 +301,52 @@ export default function Navbar() {
                       <p className="text-xs text-gray-400 truncate mt-1">
                         {user.email}
                       </p>
-
                     </div>
 
                     <Link
                       to="/profile"
-                      onClick={() =>
-                        setIsProfileOpen(false)
-                      }
-                      className="block px-4 py-3 hover:bg-purple-600/20 transition"
+                      className="
+                        block
+                        px-4
+                        py-3
+                        hover:bg-purple-600/20
+                        transition
+                      "
                     >
                       View Profile
                     </Link>
 
                     <Link
                       to="/profile"
-                      onClick={() =>
-                        setIsProfileOpen(false)
-                      }
-                      className="block px-4 py-3 hover:bg-purple-600/20 transition"
+                      className="
+                        block
+                        px-4
+                        py-3
+                        hover:bg-purple-600/20
+                        transition
+                      "
                     >
                       Edit Profile
                     </Link>
 
                     <button
                       onClick={logout}
-                      className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 transition"
+                      className="
+                        w-full
+                        text-left
+                        px-4
+                        py-3
+                        text-red-400
+                        hover:bg-red-500/10
+                        transition
+                      "
                     >
                       Logout
                     </button>
                   </>
                 )}
-
               </div>
             )}
-
           </div>
 
           {/* SETTINGS */}
@@ -256,14 +354,20 @@ export default function Navbar() {
 
             <button
               onClick={() => {
-                setIsSettingsOpen(!isSettingsOpen);
+                setIsSettingsOpen(
+                  !isSettingsOpen
+                );
                 setIsProfileOpen(false);
               }}
-              className="flex items-center gap-2 hover:text-purple-400 transition"
+              className="
+                flex
+                items-center
+                gap-2
+                hover:text-purple-400
+                transition
+              "
             >
-              <span>
-                ⚙
-              </span>
+              <span>⚙</span>
 
               <span>
                 Settings
@@ -275,25 +379,39 @@ export default function Navbar() {
             </button>
 
             {isSettingsOpen && (
-              <div className="absolute right-0 mt-3 w-48 bg-[#151522] border border-white/10 rounded-xl shadow-xl overflow-hidden">
-
+              <div
+                className="
+                  absolute
+                  right-0
+                  top-full
+                  mt-3
+                  w-48
+                  rounded-xl
+                  overflow-hidden
+                  shadow-2xl
+                  border
+                  border-white/10
+                  bg-[#151522]
+                  z-[100]
+                "
+              >
                 <Link
                   to="/settings"
-                  onClick={() =>
-                    setIsSettingsOpen(false)
-                  }
-                  className="block px-4 py-3 hover:bg-purple-600/20 transition"
+                  className="
+                    block
+                    px-4
+                    py-3
+                    hover:bg-purple-600/20
+                    transition
+                  "
                 >
                   Personalization
                 </Link>
-
               </div>
             )}
-
           </div>
 
         </div>
-
       </div>
     </nav>
   );
