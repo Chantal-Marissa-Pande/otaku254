@@ -12,7 +12,9 @@ export default function ProtectedRoute({ children }: PropsWithChildren) {
       setUser(currentUser);
       setLoading(false);
     });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   if (loading) return <p className="p-10">Loading...</p>;

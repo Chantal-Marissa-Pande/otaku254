@@ -16,7 +16,9 @@ export default function Chatbot() {
   ]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), [messages, loading]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const sendMessage = async () => {
     const currentMessage = message.trim();
