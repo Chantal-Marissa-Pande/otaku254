@@ -43,12 +43,12 @@ export default function Login() {
         if (userData.role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/community");
+          navigate("/");
         }
       } else {
         // If the account exists but doesn't have
         // a Firestore user document yet
-        navigate("/community");
+        navigate("/");
       }
 
     } catch (error: unknown) {

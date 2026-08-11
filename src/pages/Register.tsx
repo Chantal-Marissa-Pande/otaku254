@@ -58,7 +58,7 @@ export default function Register() {
       alert("Account created successfully!");
 
       // Send user to the community
-      navigate("/community");
+      navigate("/");
 
     } catch (error: unknown) {
       console.error("Registration failed:", error);
