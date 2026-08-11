@@ -12,6 +12,7 @@ import About from "./pages/About";
 import PostPage from "./pages/PostPage";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import Community from "./pages/Community";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/merch" element={<Merch />} />
           <Route path="/about" element={<About />} />
           <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/community" element={<Community/>} />
 
           <Route
             path="/admin"

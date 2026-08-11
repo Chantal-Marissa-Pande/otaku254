@@ -24,8 +24,6 @@ export default function Admin() {
   const [author, setAuthor] =
     useState("");
 
-  const [tags, setTags] = useState("");
-
   const [readTime, setReadTime] =
     useState("");
 
@@ -48,10 +46,6 @@ export default function Admin() {
 
         author,
 
-        tags: tags
-          .split(",")
-          .map((tag) => tag.trim()),
-
         readTime,
 
         featured,
@@ -65,7 +59,6 @@ export default function Admin() {
       setDescription("");
       setContent("");
       setImage("");
-      setTags("");
       setReadTime("");
       setFeatured(false);
 
@@ -132,16 +125,6 @@ export default function Admin() {
         placeholder="Read Time (e.g. 5 min read)"
         onChange={(e) =>
           setReadTime(e.target.value)
-        }
-      />
-
-      {/* TAGS */}
-      <input
-        value={tags}
-        className="w-full p-3 rounded bg-black border border-white/20"
-        placeholder="Tags separated by commas"
-        onChange={(e) =>
-          setTags(e.target.value)
         }
       />
 

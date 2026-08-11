@@ -17,6 +17,7 @@ export default function Navbar() {
           <Link to="/kpop" className="hover:text-purple-400">K-pop</Link>
           <Link to="/merch" className="hover:text-purple-400">Merch</Link>
           <Link to="/about" className="hover:text-purple-400">About</Link>
+          <Link to="/community" className="hover:text-purple-400">Community</Link>
         </div>
 
       </div>
