@@ -16,7 +16,7 @@ import CreatePost from "../components/community/CreatePost";
 import CommunityPost from "../components/community/CommunityPost";
 
 interface Comment {
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   content: string;
@@ -44,14 +44,12 @@ const categories = [
 ];
 
 export default function Community() {
-  const [posts, setPosts] =
-    useState<CommunityPostData[]>([]);
+  const [posts, setPosts] = useState<CommunityPostData[]>([]);
 
   const [activeCategory, setActiveCategory] =
     useState("All");
 
-  const [newPost, setNewPost] =
-    useState("");
+  const [newPost, setNewPost] = useState("");
 
   const [newPostCategory, setNewPostCategory] =
     useState("General");
@@ -62,11 +60,10 @@ export default function Community() {
   const [openComments, setOpenComments] =
     useState<string | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   /*
-   * LOAD COMMUNITY POSTS
+   * LOAD POSTS
    */
   useEffect(() => {
     const postsQuery = query(
@@ -90,7 +87,7 @@ export default function Community() {
               likes: data.likes || 0,
               liked: false,
               time: formatTime(data.createdAt),
-              comments: data.comments || [],
+              comments: [],
             };
           });
 
@@ -111,7 +108,70 @@ export default function Community() {
   }, []);
 
   /*
-   * FORMAT TIMESTAMP
+   * LOAD COMMENTS FOR POSTS
+   */
+  useEffect(() => {
+    if (posts.length === 0) return;
+
+    const unsubscribers = posts.map((post) => {
+      const commentsQuery = query(
+        collection(
+          db,
+          "communityPosts",
+          post.id,
+          "comments"
+        ),
+        orderBy("createdAt", "asc")
+      );
+
+      return onSnapshot(
+        commentsQuery,
+        (snapshot) => {
+          const comments: Comment[] =
+            snapshot.docs.map((doc) => {
+              const data = doc.data();
+
+              return {
+                id: doc.id,
+                username:
+                  data.username || "Anonymous",
+                avatar: data.avatar || "A",
+                content: data.content || "",
+                time: formatTime(
+                  data.createdAt
+                ),
+              };
+            });
+
+          setPosts((currentPosts) =>
+            currentPosts.map((currentPost) =>
+              currentPost.id === post.id
+                ? {
+                    ...currentPost,
+                    comments,
+                  }
+                : currentPost
+            )
+          );
+        },
+        (error) => {
+          console.error(
+            `Error loading comments for ${post.id}:`,
+            error
+          );
+        }
+      );
+    });
+
+    return () => {
+      unsubscribers.forEach((unsubscribe) =>
+        unsubscribe()
+      );
+    };
+  }, [posts.length]);
+
+  /*
+   * FORMAT TIME
    */
   const formatTime = (timestamp: any) => {
     if (!timestamp) {
@@ -190,14 +250,12 @@ export default function Community() {
           category: newPostCategory,
           content: newPost.trim(),
           likes: 0,
-          comments: [],
           createdAt: serverTimestamp(),
         }
       );
 
       setNewPost("");
       setNewPostCategory("General");
-
     } catch (error) {
       console.error(
         "Error creating community post:",
@@ -211,7 +269,7 @@ export default function Community() {
   /*
    * LIKE / UNLIKE
    *
-   * Temporary frontend implementation.
+   * Still temporary.
    */
   const handleLike = (postId: string) => {
     setPosts((currentPosts) =>
@@ -234,9 +292,7 @@ export default function Community() {
   /*
    * OPEN / CLOSE COMMENTS
    */
-  const toggleComments = (
-    postId: string
-  ) => {
+  const toggleComments = (postId: string) => {
     setOpenComments((current) =>
       current === postId
         ? null
@@ -258,11 +314,9 @@ export default function Community() {
   };
 
   /*
-   * ADD COMMENT
-   *
-   * Temporary frontend implementation.
+   * ADD COMMENT TO FIRESTORE
    */
-  const handleAddComment = (
+  const handleAddComment = async (
     postId: string
   ) => {
     const commentText =
@@ -270,37 +324,38 @@ export default function Community() {
 
     if (!commentText) return;
 
-    const newComment: Comment = {
-      id: Date.now(),
-      username: "You",
-      avatar: "YO",
-      content: commentText,
-      time: "Just now",
-    };
+    try {
+      await addDoc(
+        collection(
+          db,
+          "communityPosts",
+          postId,
+          "comments"
+        ),
+        {
+          username: "You",
+          avatar: "YO",
+          content: commentText,
+          createdAt: serverTimestamp(),
+        }
+      );
 
-    setPosts((currentPosts) =>
-      currentPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              comments: [
-                ...post.comments,
-                newComment,
-              ],
-            }
-          : post
-      )
-    );
+      setCommentInputs((current) => ({
+        ...current,
+        [postId]: "",
+      }));
+    } catch (error) {
+      console.error(
+        "Error adding comment:",
+        error
+      );
 
-    setCommentInputs((current) => ({
-      ...current,
-      [postId]: "",
-    }));
+      alert("Could not add comment.");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#0f0f1a] px-4 py-10">
-
       <div className="mx-auto max-w-5xl">
 
         {/* Header */}
@@ -319,23 +374,15 @@ export default function Community() {
           newPost={newPost}
           newPostCategory={newPostCategory}
           onPostChange={setNewPost}
-          onCategoryChange={
-            setNewPostCategory
-          }
-          onCreatePost={
-            handleCreatePost
-          }
+          onCategoryChange={setNewPostCategory}
+          onCreatePost={handleCreatePost}
         />
 
         {/* Categories */}
         <CategoryFilter
           categories={categories}
-          activeCategory={
-            activeCategory
-          }
-          onCategoryChange={
-            setActiveCategory
-          }
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
         />
 
         {/* Posts */}
@@ -355,57 +402,44 @@ export default function Community() {
                 key={post.id}
                 post={post}
                 commentsOpen={
-                  openComments ===
-                  post.id
+                  openComments === post.id
                 }
                 commentInput={
-                  commentInputs[
-                    post.id
-                  ] || ""
+                  commentInputs[post.id] || ""
                 }
                 onLike={() =>
                   handleLike(post.id)
                 }
                 onToggleComments={() =>
-                  toggleComments(
-                    post.id
-                  )
+                  toggleComments(post.id)
                 }
-                onCommentChange={(
-                  value
-                ) =>
+                onCommentChange={(value) =>
                   handleCommentChange(
                     post.id,
                     value
                   )
                 }
                 onAddComment={() =>
-                  handleAddComment(
-                    post.id
-                  )
+                  handleAddComment(post.id)
                 }
               />
             ))}
 
           {!loading &&
-            filteredPosts.length ===
-              0 && (
+            filteredPosts.length === 0 && (
               <div className="rounded-2xl border border-gray-800 bg-[#171725] p-10 text-center">
                 <p className="text-gray-400">
                   No posts in this category yet.
                 </p>
 
                 <p className="mt-2 text-sm text-gray-600">
-                  Be the first person to
-                  start a discussion!
+                  Be the first person to start a discussion!
                 </p>
               </div>
             )}
 
         </div>
-
       </div>
-
     </div>
   );
 }
