@@ -1,29 +1,38 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Register() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const login = async () => {
-    if (!email || !password) {
-      alert("Please enter your email and password.");
+  const register = async () => {
+    if (!username || !email || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Sign in with Firebase Authentication
+      // Create Firebase Authentication account
       const userCredential =
-        await signInWithEmailAndPassword(
+        await createUserWithEmailAndPassword(
           auth,
           email,
           password
@@ -31,52 +40,48 @@ export default function Login() {
 
       const user = userCredential.user;
 
-      // Get user's Firestore document
-      const userDoc = await getDoc(
-        doc(db, "users", user.uid)
-      );
+      // Store username in Firebase Authentication
+      await updateProfile(user, {
+        displayName: username,
+      });
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+      // Create user document in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        username: username,
+        email: email,
+        photoURL: "",
+        role: "user",
+        createdAt: Date.now(),
+      });
 
-        // Check user role
-        if (userData.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/community");
-        }
-      } else {
-        // If the account exists but doesn't have
-        // a Firestore user document yet
-        navigate("/community");
-      }
+      alert("Account created successfully!");
+
+      // Send user to the community
+      navigate("/community");
 
     } catch (error: unknown) {
-      console.error("Login failed:", error);
+      console.error("Registration failed:", error);
 
       if (error instanceof FirebaseError) {
         switch (error.code) {
-          case "auth/invalid-credential":
-            alert("Incorrect email or password.");
-            break;
-
-          case "auth/user-not-found":
-            alert("No account was found with this email.");
-            break;
-
-          case "auth/wrong-password":
-            alert("Incorrect password.");
+          case "auth/email-already-in-use":
+            alert("An account with this email already exists.");
             break;
 
           case "auth/invalid-email":
             alert("Please enter a valid email address.");
             break;
 
+          case "auth/weak-password":
+            alert("Password must be at least 6 characters.");
+            break;
+
           default:
-            alert("Login failed. Please try again.");
+            alert("Registration failed. Please try again.");
         }
       } else {
-        alert("Login failed. Please try again.");
+        alert("Registration failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -88,14 +93,23 @@ export default function Login() {
       <div className="w-full max-w-md">
 
         <h1 className="text-3xl font-bold mb-2">
-          Welcome Back
+          Join Otaku254
         </h1>
 
         <p className="text-gray-400 mb-8">
-          Login to your Otaku254 account.
+          Create an account and join the community.
         </p>
 
         <div className="space-y-4">
+
+          {/* USERNAME */}
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-3 rounded bg-black border border-white/20"
+          />
 
           {/* EMAIL */}
           <input
@@ -115,26 +129,28 @@ export default function Login() {
             className="w-full p-3 rounded bg-black border border-white/20"
           />
 
-          {/* LOGIN */}
+          {/* REGISTER */}
           <button
-            onClick={login}
+            onClick={register}
             disabled={loading}
             className="w-full bg-purple-600 hover:bg-purple-700 transition px-4 py-3 rounded-xl font-semibold disabled:opacity-50"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
 
         </div>
 
-        {/* REGISTER LINK */}
+        {/* LOGIN LINK */}
         <p className="text-gray-400 mt-6 text-center">
-          Don't have an account?{" "}
+          Already have an account?{" "}
 
           <button
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/login")}
             className="text-purple-400 hover:text-purple-300"
           >
-            Create Account
+            Login
           </button>
         </p>
 
