@@ -17,10 +17,7 @@ const client = new Groq({
   },
 });
 
-const configuredModel = process.env.GROQ_MODEL?.trim();
-const model = configuredModel === "groq/compound-mini"
-  ? configuredModel
-  : "groq/compound";
+const model = "groq/compound-mini";
 
 const systemPrompt = `You are Otaku AI, the assistant for Otaku254, a Kenyan and global anime, manga, K-pop and fandom community.
 
@@ -61,7 +58,7 @@ app.post("/chat", async (req, res) => {
         model,
         compound_custom: {
           tools: {
-            enabled_tools: ["web_search", "visit_website"],
+            enabled_tools: ["web_search"],
           },
         },
         messages: [
@@ -113,6 +110,12 @@ app.post("/chat", async (req, res) => {
     if (upstreamStatus === 429 || upstreamStatus === 498) {
       return res.status(503).json({
         error: "Otaku AI is busy right now. Please try again shortly.",
+      });
+    }
+
+    if (upstreamStatus === 413) {
+      return res.status(502).json({
+        error: "Otaku AI received too much research context. Please try a more specific question.",
       });
     }
 
