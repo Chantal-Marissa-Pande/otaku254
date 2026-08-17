@@ -18,10 +18,10 @@ export default function CategoryFilter({
           onClick={() =>
             onCategoryChange(category)
           }
-          className={`rounded-full px-5 py-2 text-sm font-medium transition ${
+          className={`filter-chip ${
             activeCategory === category
-              ? "bg-purple-600 text-white"
-              : "bg-[#171725] text-gray-400 hover:bg-[#222235] hover:text-white"
+              ? "active"
+              : ""
           }`}
         >
           {category}

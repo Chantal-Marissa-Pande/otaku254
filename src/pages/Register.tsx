@@ -89,14 +89,14 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+    <div className="page-shell flex items-center justify-center">
+      <div className="form-card w-full max-w-md">
 
-        <h1 className="text-3xl font-bold mb-2">
+        <span className="eyebrow">Join the fandom</span><h1 className="page-title mb-2">
           Join Otaku254
         </h1>
 
-        <p className="text-gray-400 mb-8">
+        <p className="theme-muted mb-8">
           Create an account and join the community.
         </p>
 
@@ -108,7 +108,7 @@ export default function Register() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-3 rounded bg-black border border-white/20"
+            className="form-field"
           />
 
           {/* EMAIL */}
@@ -117,7 +117,7 @@ export default function Register() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 rounded bg-black border border-white/20"
+            className="form-field"
           />
 
           {/* PASSWORD */}
@@ -126,14 +126,14 @@ export default function Register() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded bg-black border border-white/20"
+            className="form-field"
           />
 
           {/* REGISTER */}
           <button
             onClick={register}
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 transition px-4 py-3 rounded-xl font-semibold disabled:opacity-50"
+            className="primary-action w-full"
           >
             {loading
               ? "Creating Account..."
@@ -143,7 +143,7 @@ export default function Register() {
         </div>
 
         {/* LOGIN LINK */}
-        <p className="text-gray-400 mt-6 text-center">
+        <p className="theme-muted mt-6 text-center">
           Already have an account?{" "}
 
           <button

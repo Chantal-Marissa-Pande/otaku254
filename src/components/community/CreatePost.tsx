@@ -14,7 +14,7 @@ export default function CreatePost({
   onCreatePost,
 }: CreatePostProps) {
   return (
-    <div className="mb-8 rounded-2xl border border-gray-800 bg-[#171725] p-5">
+    <div className="theme-card mb-8 rounded-2xl border p-5">
 
       <div className="flex gap-4">
 
@@ -32,7 +32,7 @@ export default function CreatePost({
               onPostChange(e.target.value)
             }
             placeholder="What's on your mind?"
-            className="min-h-[100px] w-full resize-none rounded-xl border border-gray-700 bg-[#10101c] p-4 text-white outline-none placeholder:text-gray-500 focus:border-purple-500"
+            className="form-field min-h-[100px] resize-none"
           />
 
           {/* Category + Button */}
@@ -42,7 +42,7 @@ export default function CreatePost({
 
               <label
                 htmlFor="post-category"
-                className="text-sm text-gray-500"
+                className="text-sm text-[var(--otaku-muted)]"
               >
                 Category:
               </label>
@@ -53,7 +53,7 @@ export default function CreatePost({
                 onChange={(e) =>
                   onCategoryChange(e.target.value)
                 }
-                className="rounded-lg border border-gray-700 bg-[#10101c] px-3 py-2 text-sm text-white outline-none focus:border-purple-500"
+                className="form-field min-h-0 w-auto px-3 py-2 text-sm"
               >
                 <option value="General">
                   General
@@ -77,7 +77,7 @@ export default function CreatePost({
             <button
               onClick={onCreatePost}
               disabled={!newPost.trim()}
-              className="rounded-lg bg-purple-600 px-5 py-2 font-semibold transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="primary-action min-h-0 px-5 py-2"
             >
               Post
             </button>

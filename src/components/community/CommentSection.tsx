@@ -20,7 +20,7 @@ export default function CommentSection({
   onAddComment,
 }: CommentSectionProps) {
   return (
-    <div className="mt-5 border-t border-gray-800 pt-5">
+    <div className="mt-5 border-t border-[var(--otaku-border)] pt-5">
 
       <h4 className="mb-4 font-semibold">
         Comments
@@ -45,7 +45,7 @@ export default function CommentSection({
               {comment.avatar}
             </div>
 
-            <div className="flex-1 rounded-xl bg-[#10101c] px-4 py-3">
+            <div className="rounded-xl bg-[var(--otaku-bg)] px-4 py-3 flex-1">
 
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold">
@@ -57,7 +57,7 @@ export default function CommentSection({
                 </span>
               </div>
 
-              <p className="mt-1 text-sm leading-6 text-gray-300">
+              <p className="mt-1 text-sm leading-6 text-[var(--otaku-muted)]">
                 {comment.content}
               </p>
 
@@ -89,13 +89,13 @@ export default function CommentSection({
               }
             }}
             placeholder="Write a comment..."
-            className="min-w-0 flex-1 rounded-xl border border-gray-700 bg-[#10101c] px-4 py-2 text-sm text-white outline-none placeholder:text-gray-500 focus:border-purple-500"
+            className="form-field min-w-0 flex-1 py-2 text-sm"
           />
 
           <button
             onClick={onAddComment}
             disabled={!commentInput.trim()}
-            className="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="primary-action min-h-0 px-4 py-2 text-sm"
           >
             Send
           </button>

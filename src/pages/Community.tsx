@@ -672,7 +672,7 @@ export default function Community() {
 
   return (
     <div
-      className="min-h-screen px-4 py-10"
+      className="page-shell"
       style={{
         background:
           "var(--otaku-bg)",
@@ -681,14 +681,14 @@ export default function Community() {
       }}
     >
 
-      <div className="mx-auto max-w-5xl">
+      <div className="page-container max-w-5xl">
 
         {/* HEADER */}
 
-        <div className="mb-8">
+        <div className="page-header">
 
-          <h1
-            className="text-4xl font-bold"
+          <span className="eyebrow">Fan discussions</span><h1
+            className="page-title"
             style={{
               color:
                 "var(--otaku-text)",

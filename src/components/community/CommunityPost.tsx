@@ -40,7 +40,7 @@ export default function CommunityPost({
   onAddComment,
 }: CommunityPostProps) {
   return (
-    <article className="rounded-2xl border border-gray-800 bg-[#171725] p-5">
+    <article className="theme-card rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:border-purple-500/40">
 
       {/* User information */}
       <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export default function CommunityPost({
             {post.username}
           </h3>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[var(--otaku-muted)]">
             {post.time}
           </p>
         </div>
@@ -66,12 +66,12 @@ export default function CommunityPost({
       </div>
 
       {/* Post content */}
-      <p className="mt-4 leading-7 text-gray-200">
+      <p className="mt-4 leading-7 text-[var(--otaku-text)]">
         {post.content}
       </p>
 
       {/* Actions */}
-      <div className="mt-5 flex gap-6 border-t border-gray-800 pt-4">
+      <div className="mt-5 flex gap-6 border-t border-[var(--otaku-border)] pt-4">
 
         <button
           onClick={onLike}

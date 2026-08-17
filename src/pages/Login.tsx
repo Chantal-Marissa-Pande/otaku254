@@ -84,14 +84,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+    <div className="page-shell flex items-center justify-center">
+      <div className="form-card w-full max-w-md">
 
-        <h1 className="text-3xl font-bold mb-2">
+        <span className="eyebrow">Welcome back</span><h1 className="page-title mb-2">
           Welcome Back
         </h1>
 
-        <p className="text-gray-400 mb-8">
+        <p className="theme-muted mb-8">
           Login to your Otaku254 account.
         </p>
 
@@ -103,7 +103,7 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 rounded bg-black border border-white/20"
+            className="form-field"
           />
 
           {/* PASSWORD */}
@@ -112,14 +112,14 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded bg-black border border-white/20"
+            className="form-field"
           />
 
           {/* LOGIN */}
           <button
             onClick={login}
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 transition px-4 py-3 rounded-xl font-semibold disabled:opacity-50"
+            className="primary-action w-full"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -127,7 +127,7 @@ export default function Login() {
         </div>
 
         {/* REGISTER LINK */}
-        <p className="text-gray-400 mt-6 text-center">
+        <p className="theme-muted mt-6 text-center">
           Don't have an account?{" "}
 
           <button

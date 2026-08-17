@@ -12,25 +12,23 @@ export default function CategoryPage({ category, intro }: Props) {
   const categoryPosts = posts.filter((post) => post.category === category);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-400">
-        Otaku254 / {category}
-      </p>
-      <h1 className="mt-3 text-4xl font-bold">{category}</h1>
-      <p className="mt-3 max-w-2xl text-gray-400">{intro}</p>
+    <section className="page-shell">
+      <div className="page-container">
+      <header className="page-header"><span className="eyebrow">Otaku254 / {category}</span><h1 className="page-title gradient-heading">{category}</h1><p className="page-intro">{intro}</p></header>
 
-      {loading && <p className="py-16 text-gray-400">Loading articles...</p>}
+      {loading && <div className="empty-state">Loading articles…</div>}
       {error && <p className="py-16 text-red-300">{error}</p>}
       {!loading && !error && categoryPosts.length === 0 && (
-        <div className="mt-10 rounded-2xl border border-dashed border-white/20 p-10 text-center text-gray-400">
+        <div className="empty-state">
           No {category} articles yet. Check back soon.
         </div>
       )}
       {categoryPosts.length > 0 && (
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {categoryPosts.map((post) => <BlogCard key={post.id} {...post} />)}
         </div>
       )}
+      </div>
     </section>
   );
 }

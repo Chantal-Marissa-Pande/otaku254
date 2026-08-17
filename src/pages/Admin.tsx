@@ -72,16 +72,12 @@ export default function Admin() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-10 space-y-4">
-
-      <h1 className="text-3xl font-bold mb-6">
-        Admin Panel
-      </h1>
+    <main className="page-shell"><div className="page-container max-w-3xl"><header className="page-header"><span className="eyebrow">Content studio</span><h1 className="page-title">Admin panel</h1><p className="page-intro">Create and publish stories across the Otaku254 fandom channels.</p></header><div className="form-card space-y-4">
 
       {/* TITLE */}
       <input
         value={title}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Post Title"
         onChange={(e) =>
           setTitle(e.target.value)
@@ -91,7 +87,7 @@ export default function Admin() {
       {/* DESCRIPTION */}
       <input
         value={description}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Short Description"
         onChange={(e) =>
           setDescription(e.target.value)
@@ -101,7 +97,7 @@ export default function Admin() {
       {/* IMAGE */}
       <input
         value={image}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Image URL"
         onChange={(e) =>
           setImage(e.target.value)
@@ -111,7 +107,7 @@ export default function Admin() {
       {/* AUTHOR */}
       <input
         value={author}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Author"
         onChange={(e) =>
           setAuthor(e.target.value)
@@ -121,7 +117,7 @@ export default function Admin() {
       {/* READ TIME */}
       <input
         value={readTime}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Read Time (e.g. 5 min read)"
         onChange={(e) =>
           setReadTime(e.target.value)
@@ -132,7 +128,7 @@ export default function Admin() {
       <textarea
         value={content}
         rows={8}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         placeholder="Full Content"
         onChange={(e) =>
           setContent(e.target.value)
@@ -142,7 +138,7 @@ export default function Admin() {
       {/* CATEGORY */}
       <select
         value={category}
-        className="w-full p-3 rounded bg-black border border-white/20"
+        className="form-field"
         onChange={(e) =>
           setCategory(e.target.value)
         }
@@ -169,19 +165,10 @@ export default function Admin() {
       {/* BUTTON */}
       <button
         onClick={addPost}
-        className="
-          bg-purple-600
-          hover:bg-purple-700
-          transition
-          px-4
-          py-3
-          rounded-xl
-          w-full
-          font-semibold
-        "
+        className="primary-action w-full"
       >
         Publish Post
       </button>
-    </div>
+    </div></div></main>
   );
 }

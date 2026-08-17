@@ -26,19 +26,19 @@ export default function PostPage() {
     fetchPost();
   }, [id]);
 
-  if (loading) return <div className="p-10 text-white">Loading...</div>;
+  if (loading) return <div className="page-shell"><div className="empty-state mx-auto max-w-3xl">Loading article…</div></div>;
   if (error) return <div className="p-10 text-red-200">{error}</div>;
-  if (!post) return <div className="p-10 text-white">Post not found</div>;
+  if (!post) return <div className="page-shell"><div className="empty-state mx-auto max-w-3xl">Post not found</div></div>;
 
   return (
-    <article className="max-w-3xl mx-auto px-6 py-16 text-white">
-      <span className="text-purple-400">{post.category}</span>
-      <h1 className="mt-2 text-4xl font-bold">{post.title}</h1>
-      <div className="mt-4 flex gap-3 text-sm text-gray-400"><span>By {post.author || "Otaku254"}</span>{post.readTime && <span>{post.readTime}</span>}</div>
-      {post.image && <img src={post.image} alt={post.title} className="mb-3 mt-8 h-64 w-full rounded-xl object-cover" />}
-      <p className="mt-6 text-lg text-gray-300">{post.description}</p>
-      <div className="mt-8 whitespace-pre-wrap text-lg leading-relaxed">{post.content}</div>
+    <article className="page-shell"><div className="mx-auto max-w-3xl">
+      <span className="eyebrow">{post.category}</span>
+      <h1 className="page-title">{post.title}</h1>
+      <div className="mt-4 flex gap-3 text-sm text-[var(--otaku-muted)]"><span>By {post.author || "Otaku254"}</span>{post.readTime && <span>· {post.readTime}</span>}</div>
+      {post.image && <img src={post.image} alt={post.title} className="mb-3 mt-9 h-72 w-full rounded-3xl object-cover shadow-2xl" />}
+      <p className="mt-7 text-xl leading-8 text-[var(--otaku-muted)]">{post.description}</p>
+      <div className="mt-9 whitespace-pre-wrap text-lg leading-8">{post.content}</div>
       {post.tags?.length > 0 && <div className="mt-10 flex flex-wrap gap-2">{post.tags.map((tag) => <span key={tag} className="rounded-full bg-purple-500/15 px-3 py-1 text-sm text-purple-200">#{tag}</span>)}</div>}
-    </article>
+    </div></article>
   );
 }
