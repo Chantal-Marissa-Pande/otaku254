@@ -6,7 +6,7 @@ Otaku254 is an anime, manga and K-pop media platform with Firestore-powered arti
 
 1. Copy `.env.example` to `.env` and add the Firebase web app values from your Firebase project.
 2. In Firebase, enable Email/Password authentication and create a Firestore database. Add a user in Authentication - that account can access `/admin`.
-3. Copy `backend/.env.example` to `backend/.env` and add `GROQ_API_KEY`. The chatbot uses `groq/compound-mini` with web search.
+3. Copy `backend/.env.example` to `backend/.env` and add `GROQ_API_KEY` and `TAVILY_API_KEY`. Tavily returns a maximum of three search results and Groq writes a grounded answer from that evidence.
 4. In one terminal, start the API from the project root with `npm run dev:backend`.
 5. In a second terminal, start the website with `npm run dev`.
 
@@ -20,7 +20,7 @@ Posts are stored in the `posts` Firestore collection. The admin dashboard writes
 
 - Add all Firebase variables to the frontend host.
 - Add `GROQ_API_KEY` to the backend host only - never expose it as a `VITE_` variable.
-- The chatbot uses `groq/compound-mini`; the model is fixed in the backend so stale deployment variables cannot silently select an ungrounded model.
+- The chatbot uses Tavily basic search plus `openai/gpt-oss-120b` on Groq. Keep both API keys on the backend only.
 - Set `VITE_API_URL` to the deployed backend HTTPS URL.
 - Restrict Firestore rules so only authenticated admin users can create or edit posts.
 
