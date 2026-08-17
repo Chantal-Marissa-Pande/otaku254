@@ -12,16 +12,20 @@ app.use(express.json());
 
 const client = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+  defaultHeaders: {
+    "Groq-Model-Version": "latest",
+  },
 });
 
-const model =
-  process.env.GROQ_MODEL ||
-  "groq/compound";
+const configuredModel = process.env.GROQ_MODEL?.trim();
+const model = configuredModel === "groq/compound-mini"
+  ? configuredModel
+  : "groq/compound";
 
 const systemPrompt = `You are Otaku AI, the assistant for Otaku254, a Kenyan and global anime, manga, K-pop and fandom community.
 
 Accuracy rules:
-- Use web search for unfamiliar names, niche entities, events, people, organizations, releases, venues, dates, prices, schedules, news, or any information that may have changed.
+- You MUST use web search before answering any factual question, including questions about names, titles, events, people, organizations, releases, venues, dates, prices, schedules, availability, or news.
 - Consider Kenyan and East African fandom context before assuming a term refers to Japanese media.
 - Never invent a title, creator, publication, adaptation, date, venue, ticket price, or source.
 - If reliable evidence is unavailable, say so plainly and ask a short clarifying question.
@@ -33,6 +37,10 @@ Write welcoming, concise answers. Add detail only when it helps the user.`;
 // Test Route
 app.get("/", (req, res) => {
   res.send("Otaku AI backend is running!");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", model });
 });
 
 // Chat Route
@@ -51,6 +59,11 @@ app.post("/chat", async (req, res) => {
     const completion =
       await client.chat.completions.create({
         model,
+        compound_custom: {
+          tools: {
+            enabled_tools: ["web_search", "visit_website"],
+          },
+        },
         messages: [
           {
             role: "system",
@@ -63,9 +76,23 @@ app.post("/chat", async (req, res) => {
         ],
       });
 
+    const responseMessage = completion.choices[0]?.message;
+    const searched = Array.isArray(responseMessage?.executed_tools) &&
+      responseMessage.executed_tools.some((tool) => tool?.type === "search");
+    const isCasualMessage = /^(hi|hello|hey|thanks|thank you|good (morning|afternoon|evening))[.!\s]*$/i.test(message.trim());
+
+    if (!searched && !isCasualMessage) {
+      return res.json({
+        reply: "I couldn't verify that with reliable sources, so I don't want to guess. Could you add a little more context or try again?",
+        model,
+        searched: false,
+      });
+    }
+
     res.json({
-      reply:
-        completion.choices[0].message.content,
+      reply: responseMessage?.content || "I couldn't produce a verified answer.",
+      model,
+      searched,
     });
   } catch (error) {
     const upstreamStatus =
