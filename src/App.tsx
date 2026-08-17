@@ -109,7 +109,8 @@ export default function App() {
            * use dark mode by default.
            */
           if (!user) {
-            applyUserTheme("dark");
+            const guestTheme = localStorage.getItem("otaku-theme");
+            applyUserTheme(guestTheme === "light" ? "light" : "dark");
             return;
           }
 

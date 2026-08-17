@@ -53,6 +53,9 @@ export default function Settings() {
     }
 
     root.setAttribute("data-theme", actualTheme);
+    root.setAttribute("data-theme-choice", selectedTheme);
+    root.classList.toggle("dark", actualTheme === "dark");
+    localStorage.setItem("otaku-theme", selectedTheme);
 
     // Helps the browser style native controls correctly.
     root.style.colorScheme = actualTheme;

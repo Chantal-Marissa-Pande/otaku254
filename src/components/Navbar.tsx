@@ -15,6 +15,7 @@ import { auth, db } from "../firebase";
 import {
   doc,
   getDoc,
+  setDoc,
 } from "firebase/firestore";
 
 export default function Navbar() {
@@ -32,6 +33,10 @@ export default function Navbar() {
 
   const [isMobileOpen, setIsMobileOpen] =
     useState(false);
+
+  const [isDark, setIsDark] = useState(
+    () => document.documentElement.getAttribute("data-theme") !== "light"
+  );
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,6 +99,34 @@ export default function Navbar() {
     setIsSettingsOpen(false);
     setIsMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const syncTheme = () => setIsDark(root.getAttribute("data-theme") !== "light");
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const toggleTheme = async () => {
+    const nextTheme = isDark ? "light" : "dark";
+    const root = document.documentElement;
+    root.setAttribute("data-theme", nextTheme);
+    root.setAttribute("data-theme-choice", nextTheme);
+    root.classList.toggle("dark", nextTheme === "dark");
+    root.style.colorScheme = nextTheme;
+    localStorage.setItem("otaku-theme", nextTheme);
+    setIsDark(nextTheme === "dark");
+
+    if (user) {
+      try {
+        await setDoc(doc(db, "users", user.uid), { theme: nextTheme }, { merge: true });
+      } catch (error) {
+        console.error("Error saving navbar theme:", error);
+      }
+    }
+  };
 
   /*
    * Logout
@@ -291,6 +324,10 @@ export default function Navbar() {
           >
             Community
           </Link>
+
+          <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${isDark ? "light" : "dark"} mode`} aria-pressed={isDark}>
+            <span aria-hidden="true">☀</span><span className="theme-toggle-track"><span className="theme-toggle-knob" /></span><span aria-hidden="true">☾</span>
+          </button>
 
 
           {/* ADMIN */}
@@ -602,6 +639,9 @@ export default function Navbar() {
           className="border-t border-gray-200 px-4 pb-5 pt-3 md:hidden dark:border-white/10"
         >
           <div className="mx-auto grid max-w-7xl gap-1">
+            <button type="button" onClick={toggleTheme} className="mb-2 flex items-center justify-between rounded-xl border border-[var(--otaku-border)] bg-[var(--otaku-surface)] px-4 py-3 font-medium">
+              <span>{isDark ? "Dark mode" : "Light mode"}</span><span aria-hidden="true">{isDark ? "☾" : "☀"}</span>
+            </button>
             {[
               ["Home", "/"],
               ["Anime", "/anime"],

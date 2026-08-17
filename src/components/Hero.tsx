@@ -18,7 +18,6 @@ export default function Hero() {
       <h1 className="gradient-heading mt-5 text-6xl font-black tracking-[-0.05em] sm:text-8xl">Otaku254</h1>
       <p className="mx-auto mt-5 max-w-2xl text-base font-medium text-[var(--otaku-muted)] sm:text-xl">Anime · Manga · K-pop — your culture, your community</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3"><a href="#discover" className="gradient-button">Explore now</a><Link to="/community" className="secondary-button">Join community</Link></div>
-      <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">{[["12K+", "Members"], ["850+", "Stories"], ["24/7", "Updates"], ["NBO", "Made in Nairobi"]].map(([value, label]) => <div key={label}><strong className="gradient-heading block text-2xl font-extrabold">{value}</strong><span className="mt-1 block text-xs font-medium text-[var(--otaku-muted)]">{label}</span></div>)}</div>
     </div>
   </section>;
 }
