@@ -30,6 +30,9 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] =
     useState(false);
 
+  const [isMobileOpen, setIsMobileOpen] =
+    useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -89,6 +92,7 @@ export default function Navbar() {
   useEffect(() => {
     setIsProfileOpen(false);
     setIsSettingsOpen(false);
+    setIsMobileOpen(false);
   }, [location.pathname]);
 
   /*
@@ -166,6 +170,17 @@ export default function Navbar() {
             254
           </span>
         </Link>
+
+        <button
+          type="button"
+          className="grid h-11 w-11 place-items-center rounded-xl border border-gray-200 text-2xl md:hidden dark:border-white/10"
+          aria-label={isMobileOpen ? "Close navigation" : "Open navigation"}
+          aria-expanded={isMobileOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setIsMobileOpen((open) => !open)}
+        >
+          <span aria-hidden="true">{isMobileOpen ? "×" : "☰"}</span>
+        </button>
 
 
         {/* MAIN NAVIGATION */}
@@ -580,6 +595,68 @@ export default function Navbar() {
 
         </div>
       </div>
+
+      {isMobileOpen && (
+        <div
+          id="mobile-navigation"
+          className="border-t border-gray-200 px-4 pb-5 pt-3 md:hidden dark:border-white/10"
+        >
+          <div className="mx-auto grid max-w-7xl gap-1">
+            {[
+              ["Home", "/"],
+              ["Anime", "/anime"],
+              ["Manga", "/manga"],
+              ["K-pop", "/kpop"],
+              ["Merch", "/merch"],
+              ["Community", "/community"],
+              ["About", "/about"],
+            ].map(([label, path]) => (
+              <Link
+                key={path}
+                to={path}
+                className={`rounded-xl px-4 py-3 text-base font-medium transition ${
+                  location.pathname === path
+                    ? "bg-purple-600 text-white"
+                    : "hover:bg-purple-50 hover:text-purple-700 dark:hover:bg-purple-600/20 dark:hover:text-white"
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+
+            {isAdmin && (
+              <Link to="/admin" className="rounded-xl px-4 py-3 font-medium text-purple-500">
+                Admin
+              </Link>
+            )}
+
+            <div className="my-2 border-t border-gray-200 dark:border-white/10" />
+
+            {user ? (
+              <>
+                <Link to="/profile" className="rounded-xl px-4 py-3 font-medium hover:bg-purple-50 dark:hover:bg-purple-600/20">
+                  Profile
+                </Link>
+                <Link to="/settings" className="rounded-xl px-4 py-3 font-medium hover:bg-purple-50 dark:hover:bg-purple-600/20">
+                  Settings
+                </Link>
+                <button type="button" onClick={logout} className="rounded-xl px-4 py-3 text-left font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <Link to="/login" className="rounded-xl border border-purple-500 px-4 py-3 text-center font-medium text-purple-500">
+                  Login
+                </Link>
+                <Link to="/register" className="rounded-xl bg-purple-600 px-4 py-3 text-center font-medium text-white">
+                  Join
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

@@ -22,3 +22,22 @@ Posts are stored in the `posts` Firestore collection. The admin dashboard writes
 - Add `OPENAI_API_KEY` to the backend host only - never expose it as a `VITE_` variable.
 - Set `VITE_API_URL` to the deployed backend HTTPS URL.
 - Restrict Firestore rules so only authenticated admin users can create or edit posts.
+
+## Android application
+
+The web interface is mobile-responsive and a Capacitor configuration is included for an Android application with package ID `com.otaku254.app`.
+
+After Capacitor dependencies are installed, create and synchronize the native project:
+
+```bash
+npm install @capacitor/core @capacitor/android
+npm install --save-dev @capacitor/cli
+npm run build
+npx cap add android
+npx cap sync android
+npx cap open android
+```
+
+Android Studio can then run the app on an emulator or connected device and produce signed AAB/APK releases. Set `VITE_API_URL` to the backend's public HTTPS address before building: `localhost` on a physical Android device points to the device itself, not the development computer.
+
+For Firebase Authentication, add the Android app package `com.otaku254.app` in Firebase and register the release SHA fingerprints before publishing.
