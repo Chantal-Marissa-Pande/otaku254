@@ -125,7 +125,7 @@ export default function Navbar() {
   return (
     <nav
       className="
-        relative
+        sticky top-0
         z-50
         border-b
         border-gray-200
