@@ -95,9 +95,12 @@ export default function Navbar() {
    * the user changes page.
    */
   useEffect(() => {
-    setIsProfileOpen(false);
-    setIsSettingsOpen(false);
-    setIsMobileOpen(false);
+    const closeMenus = window.setTimeout(() => {
+      setIsProfileOpen(false);
+      setIsSettingsOpen(false);
+      setIsMobileOpen(false);
+    }, 0);
+    return () => window.clearTimeout(closeMenus);
   }, [location.pathname]);
 
   useEffect(() => {

@@ -53,6 +53,20 @@ const categories = [
   "General",
 ];
 
+type CommunityTimestamp = { toDate?: () => Date } | number | string | null | undefined;
+
+function formatTime(timestamp: CommunityTimestamp) {
+  if (!timestamp) return "Just now";
+  const date = typeof timestamp === "object" && timestamp.toDate ? timestamp.toDate() : new Date(timestamp as number | string);
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} ${days === 1 ? "day" : "days"} ago`;
+}
+
 
 export default function Community() {
 
@@ -362,74 +376,9 @@ export default function Community() {
 
     };
 
+  // Subscriptions are rebuilt only when the post collection size changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts.length]);
-
-
-  /*
-   * FORMAT TIME
-   */
-  const formatTime = (
-    timestamp: any
-  ) => {
-
-    if (!timestamp) {
-      return "Just now";
-    }
-
-    const date =
-      timestamp.toDate
-        ? timestamp.toDate()
-        : new Date(timestamp);
-
-    const difference =
-      Date.now() -
-      date.getTime();
-
-    const minutes =
-      Math.floor(
-        difference / 60000
-      );
-
-    if (minutes < 1) {
-      return "Just now";
-    }
-
-    if (minutes < 60) {
-
-      return `${minutes} ${
-        minutes === 1
-          ? "minute"
-          : "minutes"
-      } ago`;
-
-    }
-
-    const hours =
-      Math.floor(
-        minutes / 60
-      );
-
-    if (hours < 24) {
-
-      return `${hours} ${
-        hours === 1
-          ? "hour"
-          : "hours"
-      } ago`;
-
-    }
-
-    const days =
-      Math.floor(
-        hours / 24
-      );
-
-    return `${days} ${
-      days === 1
-        ? "day"
-        : "days"
-    } ago`;
-  };
 
 
   /*

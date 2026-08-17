@@ -11,8 +11,6 @@ import {
 
 import { auth, db } from "../firebase";
 
-type Theme = "dark" | "light" | "system";
-
 interface ContentPreferences {
   anime: boolean;
   manga: boolean;
@@ -24,8 +22,6 @@ export default function Settings() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [theme, setTheme] = useState<Theme>("dark");
-
   const [preferences, setPreferences] =
     useState<ContentPreferences>({
       anime: true,
@@ -33,33 +29,6 @@ export default function Settings() {
       kpop: true,
       merch: true,
     });
-
-  /*
-   * Apply the selected theme to the entire application.
-   */
-  const applyTheme = (selectedTheme: Theme) => {
-    const root = document.documentElement;
-
-    let actualTheme: "dark" | "light";
-
-    if (selectedTheme === "system") {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-
-      actualTheme = prefersDark ? "dark" : "light";
-    } else {
-      actualTheme = selectedTheme;
-    }
-
-    root.setAttribute("data-theme", actualTheme);
-    root.setAttribute("data-theme-choice", selectedTheme);
-    root.classList.toggle("dark", actualTheme === "dark");
-    localStorage.setItem("otaku-theme", selectedTheme);
-
-    // Helps the browser style native controls correctly.
-    root.style.colorScheme = actualTheme;
-  };
 
   /*
    * Load authenticated user and their saved settings.
@@ -71,7 +40,6 @@ export default function Settings() {
         setUser(currentUser);
 
         if (!currentUser) {
-          applyTheme("dark");
           setLoading(false);
           return;
         }
@@ -88,17 +56,8 @@ export default function Settings() {
           if (snapshot.exists()) {
             const data = snapshot.data();
 
-            const savedTheme =
-              data.theme === "light" ||
-              data.theme === "system" ||
-              data.theme === "dark"
-                ? (data.theme as Theme)
-                : "dark";
-
             const savedPreferences =
               data.contentPreferences || {};
-
-            setTheme(savedTheme);
 
             setPreferences({
               anime:
@@ -113,18 +72,12 @@ export default function Settings() {
               merch:
                 savedPreferences.merch ?? true,
             });
-
-            applyTheme(savedTheme);
-          } else {
-            applyTheme("dark");
           }
         } catch (error) {
           console.error(
             "Error loading settings:",
             error
           );
-
-          applyTheme("dark");
         } finally {
           setLoading(false);
         }
@@ -133,69 +86,6 @@ export default function Settings() {
 
     return () => unsubscribe();
   }, []);
-
-  /*
-   * Keep system theme responsive if the user selected
-   * "Use system preference".
-   */
-  useEffect(() => {
-    if (theme !== "system") {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    );
-
-    const handleSystemThemeChange = () => {
-      applyTheme("system");
-    };
-
-    mediaQuery.addEventListener(
-      "change",
-      handleSystemThemeChange
-    );
-
-    return () => {
-      mediaQuery.removeEventListener(
-        "change",
-        handleSystemThemeChange
-      );
-    };
-  }, [theme]);
-
-  /*
-   * Save theme immediately.
-   */
-  const handleThemeChange = async (
-    selectedTheme: Theme
-  ) => {
-    setTheme(selectedTheme);
-
-    // Apply immediately before Firestore finishes.
-    applyTheme(selectedTheme);
-
-    if (!user) {
-      return;
-    }
-
-    try {
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          theme: selectedTheme,
-        },
-        {
-          merge: true,
-        }
-      );
-    } catch (error) {
-      console.error(
-        "Error saving theme:",
-        error
-      );
-    }
-  };
 
   /*
    * Save content preferences immediately.
@@ -291,73 +181,16 @@ export default function Settings() {
           </h1>
 
           <p className="theme-muted mt-3 max-w-2xl text-base md:text-lg leading-relaxed">
-            Personalize your Otaku254 experience.
-            Choose how the platform looks and
-            which content you want to see.
+            Choose the fandoms you want to see more often and shape your Otaku254 experience.
           </p>
         </header>
 
         <div className="space-y-6">
 
-          {/* APPEARANCE CARD */}
-          <section className="theme-card rounded-3xl border p-6 md:p-8 shadow-sm">
-
-            <div className="mb-7 flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-purple-500/10 text-2xl">
-                🎨
-              </div>
-
-              <div>
-                <h2 className="theme-heading text-2xl font-bold">
-                  Appearance
-                </h2>
-
-                <p className="theme-muted mt-1">
-                  Choose how Otaku254 looks for you.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-
-              {/* DARK */}
-              <ThemeOption
-                title="Dark"
-                description="Use the dark Otaku254 theme."
-                value="dark"
-                selected={theme === "dark"}
-                icon="🌙"
-                onClick={() =>
-                  handleThemeChange("dark")
-                }
-              />
-
-              {/* LIGHT */}
-              <ThemeOption
-                title="Light"
-                description="Use the light Otaku254 theme."
-                value="light"
-                selected={theme === "light"}
-                icon="☀️"
-                onClick={() =>
-                  handleThemeChange("light")
-                }
-              />
-
-              {/* SYSTEM */}
-              <ThemeOption
-                title="Use system preference"
-                description="Automatically follow your device's theme."
-                value="system"
-                selected={theme === "system"}
-                icon="💻"
-                onClick={() =>
-                  handleThemeChange("system")
-                }
-              />
-
-            </div>
-          </section>
+          <aside className="theme-gradient-card flex items-center gap-4 rounded-2xl border p-5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-xl">◐</div>
+            <div><h2 className="theme-heading font-bold">Display mode</h2><p className="theme-muted mt-1 text-sm">Use the sun and moon toggle in the navigation bar to switch between light and dark mode.</p></div>
+          </aside>
 
           {/* CONTENT PREFERENCES */}
           <section className="theme-card rounded-3xl border p-6 md:p-8 shadow-sm">
@@ -369,13 +202,11 @@ export default function Settings() {
 
               <div>
                 <h2 className="theme-heading text-2xl font-bold">
-                  Content Preferences
+                  Your fandoms
                 </h2>
 
                 <p className="theme-muted mt-1 max-w-2xl">
-                  Choose the content you are most
-                  interested in. Your preferences are
-                  saved automatically.
+                  Select the topics that matter to you. These choices are saved automatically.
                 </p>
               </div>
             </div>
@@ -434,80 +265,6 @@ export default function Settings() {
         </div>
       </div>
     </main>
-  );
-}
-
-
-/*
- * THEME OPTION
- */
-interface ThemeOptionProps {
-  title: string;
-  description: string;
-  value: Theme;
-  selected: boolean;
-  icon: string;
-  onClick: () => void;
-}
-
-function ThemeOption({
-  title,
-  description,
-  value,
-  selected,
-  icon,
-  onClick,
-}: ThemeOptionProps) {
-  return (
-    <label
-      className={`
-        theme-option
-        flex
-        items-center
-        gap-4
-        rounded-2xl
-        border
-        p-4
-        md:p-5
-        cursor-pointer
-        transition-all
-        duration-200
-        ${
-          selected
-            ? "theme-option-selected"
-            : ""
-        }
-      `}
-    >
-      <input
-        type="radio"
-        name="theme"
-        value={value}
-        checked={selected}
-        onChange={onClick}
-        className="h-5 w-5 shrink-0 accent-purple-600"
-      />
-
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-lg">
-        {icon}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="theme-heading font-semibold">
-          {title}
-        </p>
-
-        <p className="theme-muted mt-1 text-sm">
-          {description}
-        </p>
-      </div>
-
-      {selected && (
-        <div className="hidden sm:flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-600 text-white text-sm">
-          ✓
-        </div>
-      )}
-    </label>
   );
 }
 
