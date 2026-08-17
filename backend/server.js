@@ -14,6 +14,10 @@ const client = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+const model =
+  process.env.GROQ_MODEL ||
+  "openai/gpt-oss-120b";
+
 // Test Route
 app.get("/", (req, res) => {
   res.send("Otaku AI backend is running!");
@@ -34,7 +38,7 @@ app.post("/chat", async (req, res) => {
 
     const completion =
       await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model,
         messages: [
           {
             role: "system",
@@ -53,9 +57,28 @@ app.post("/chat", async (req, res) => {
         completion.choices[0].message.content,
     });
   } catch (error) {
-    console.error(error);
+    const upstreamStatus =
+      Number(error?.status) || 500;
 
-    res.status(500).json({
+    console.error("Groq chat request failed", {
+      status: upstreamStatus,
+      message: error?.message,
+      model,
+    });
+
+    if (upstreamStatus === 401 || upstreamStatus === 403) {
+      return res.status(503).json({
+        error: "Otaku AI credentials need attention.",
+      });
+    }
+
+    if (upstreamStatus === 429 || upstreamStatus === 498) {
+      return res.status(503).json({
+        error: "Otaku AI is busy right now. Please try again shortly.",
+      });
+    }
+
+    res.status(502).json({
       error: "Otaku AI could not answer right now.",
     });
   }
